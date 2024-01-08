@@ -1,0 +1,118 @@
+@import url("https://fonts.googleapis.com/css2?family=Alkatra&family=Gasoek+One&family=Koulen&family=Lilita+One&family=Molle&family=Paytone+One&family=Playball&family=Quintessential&family=Squada+One&family=Staatliches&display=swap");
+
+    #app {
+    font-family: 'Gasoek One', sans-serif;
+    font-family: 'Koulen', sans-serif;
+    font-family: 'Lilita One', sans-serif;
+    font-family: 'Molle', cursive;
+    font-family: 'Paytone One', sans-serif;
+    font-family: 'Playball', cursive;
+    font-family: 'Staatliches', sans-serif;
+    font-family: 'Alkatra', sans-serif;
+    font-family: 'Squada One', sans-serif;
+    }
+
+  .gasoek {
+    font-family: 'Gasoek One', serif;
+    font-size: 16px;
+  }
+  .koulen {
+    font-family: 'Koulen', serif;
+    font-size: 16px;
+  }
+  .lilita {
+    font-family: 'Lilita One', serif;
+    font-size: 16px;
+  }
+  .molle {
+    font-family: 'Molle', serif;
+    font-size: 16px;
+  }
+  .paytone {
+    font-family: 'Paytone One', serif;
+    font-size: 16px;
+  }
+  .playball {
+    font-family: 'Playball', serif;
+    font-size: 16px;
+  }
+  .staat {
+    font-family: 'Staatliches', serif;
+    font-size: 16px;
+  }
+  .alkatara {
+    font-family: 'Alkatara', serif;
+    font-size: 16px;
+  }
+  .squada {
+    font-family: 'Squada One', serif;
+    font-size: 16px;
+  }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+
+.right-justified-div {
+  width: 10%;
+  position: fixed; /* or position: absolute; depending on your requirements */
+  top: 0;
+  right: 0;
+  padding-left: 1vw; 
+  height: 100vh;
+  background-color: red; /* Replace with your desired background color */
+  z-index: 1;
+}
+
+.editmode-div {
+    background-color: rgb(70, 0, 220); /* Replace with your desired background color */   
+}
+
+
+.container {
+  position: fixed;
+  display: flex;
+  left: 0;
+  top: 0;
+  height: 100%;
+}
+
+.container img {
+  height: 100%;
+  object-fit: cover;
+  object-position: left;
+}
+
+.selected {
+  background-color: red;
+  color: white;
+}
+
+.unselected {
+  background-color: gray;
+  color: white;
+}
+
+.slabtexted .slabtext
+    {
+    display: -moz-inline-box;
+    display: inline-block;
+    white-space: nowrap;
+    }
+.slabtextinactive .slabtext
+    {
+    display: inline;
+    white-space: normal;
+    font-size: 1em !important;
+    letter-spacing: inherit !important;
+    word-spacing: inherit !important;
+    *letter-spacing: normal !important;
+    *word-spacing: normal !important;
+    }
+.slabtextdone .slabtext
+    {
+    display: block;
+    }
