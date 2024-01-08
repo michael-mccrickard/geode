@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../gd"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Geode"
+	}
+}
