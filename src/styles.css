@@ -14,39 +14,30 @@
 
   .gasoek {
     font-family: 'Gasoek One', serif;
-    font-size: 16px;
   }
   .koulen {
     font-family: 'Koulen', serif;
-    font-size: 16px;
   }
   .lilita {
     font-family: 'Lilita One', serif;
-    font-size: 16px;
   }
   .molle {
     font-family: 'Molle', serif;
-    font-size: 16px;
   }
   .paytone {
     font-family: 'Paytone One', serif;
-    font-size: 16px;
   }
   .playball {
     font-family: 'Playball', serif;
-    font-size: 16px;
   }
   .staat {
     font-family: 'Staatliches', serif;
-    font-size: 16px;
   }
   .alkatara {
     font-family: 'Alkatara', serif;
-    font-size: 16px;
   }
   .squada {
     font-family: 'Squada One', serif;
-    font-size: 16px;
   }
 
 html, body {
@@ -85,6 +76,14 @@ html, body {
   object-fit: cover;
   object-position: left;
 }
+
+.headline {
+  position: absolute;
+  text-transform: uppercase;
+  width: 100%;
+}
+
+
 
 .selected {
   background-color: red;
