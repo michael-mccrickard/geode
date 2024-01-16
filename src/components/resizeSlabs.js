@@ -43,11 +43,13 @@ var fontSizeFractionOfWindowHeight = null;
 
         return $(element).each(function(){         
             
-            var $this = $(this);
-
-            $this.text(styleObj.textVal)   
+            var $this = $(this); 
 
             $this.width( styleObj.containerWidth + "%")
+
+            const spanElement = $this.find("span");
+
+            spanElement.text( styleObj.textVal)
 
             if(options) {
                 $.extend(settings, options);
@@ -211,21 +213,22 @@ var fontSizeFractionOfWindowHeight = null;
                         });
                     };
 
-                    //var windowHeight = window.innerHeight;
-                    //if ( props.savedBaseHeight) 
+                    var windowHeight = window.innerHeight;
+                    if ( styleObj.savedBaseHeight) windowHeight = styleObj.savedBaseHeight;
 
                     ratio    = parentWidth / $span.width();
                     fontSize = origFontSize; //parseFloat(this.style.fontSize) || origFontSize;
 
                     let calcedFontSize = Math.min((fontSize * ratio).toFixed(settings.precision), settings.maxFontSize); 
-console.log("calcedFontSize b4 = " + calcedFontSize)
+                    //console.log("calcedFontSize b4 = " + calcedFontSize)
 
+                    //Not currently using this (value is always 0)
                     if (styleObj.fontSizeChange)  calcedFontSize += styleObj.fontSizeChange;
-console.log("calcedFontSize after = " + calcedFontSize)
+                    //console.log("calcedFontSize after = " + calcedFontSize)
 
-                    fontSizeFractionOfWindowHeight = calcedFontSize / innerHeight * 100;
-console.log("fontSizeFractionOfWindowHeight = " + fontSizeFractionOfWindowHeight)
-                    $span.css("font-size", fontSizeFractionOfWindowHeight + "vh");
+                    fontSizeFractionOfWindowHeight = calcedFontSize / windowHeight * 100;
+                    //console.log("fontSizeFractionOfWindowHeight = " + fontSizeFractionOfWindowHeight)
+                    $this.css("font-size", fontSizeFractionOfWindowHeight + "vh");  //was applied to span previously
 
                     // Do we still have space to try to fill or crop
                     diff = !!settings.postTweak ? parentWidth - $span.width() : false;

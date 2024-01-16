@@ -2,12 +2,9 @@
 
 <script setup>
     import InflatedText from "./InflatedText.vue";
-    import { ref, computed, onMounted, onUnmounted, onUpdated, getCurrentInstance } from 'vue'
+    import { ref, computed, onMounted, onUnmounted, onUpdated } from 'vue'
     import { useMouse } from '../mouse.js'
     import $ from 'jquery'
-    import { getFontFraction } from './resizeSlabs.js'
-
-    const instance = getCurrentInstance()
 
     const props = defineProps(['fontclass','positionX','positionY','appmode','savedHeight'])
 
@@ -128,7 +125,6 @@
         posX.value = 0
         posY.value = 0
         rotation.value = 0
-        //fontSize.value = 6
         savedBaseHeight = 0;
         
         filename.value = "./mag_" + _txt + "_notext.png"
@@ -171,6 +167,7 @@
     const fontIndex = ref(0)
     const fontSizeChange = ref(0)
     const fontSizeInc =  5//0.25
+    const fontSize = ref(defaultFontSize)  //not currently used
 
     function getFontClass() { 
         return "headline " + arrFonts[fontIndex.value]
@@ -182,6 +179,20 @@
 
     function getFontSizeChangeValue() {
         return 0 //fontSizeChange.value
+    }
+
+    function getFontSizeValue() {
+
+        let windowHeight = window.innerHeight
+        if ( savedBaseHeight) windowHeight = savedBaseHeight
+        
+        let fontSizeInPixels = $("div#bigone").css("font-size")
+
+        fontSizeInPixels = fontSizeInPixels.slice(0, -2);
+
+        fontSize.value = fontSizeInPixels / windowHeight * 100
+
+        return fontSize.value
     }
 
     function adjustFontIndex(_val) {
@@ -310,7 +321,8 @@
             rotate: getRotation(),
             top: (posY.value / windowHeight * 100) + "%",
             left: (posX.value / windowHeight * 100) + "%",
-            fontSizeChange: fontSizeChange.value,          
+            fontSize: fontSize.value + "vh",
+            fontSizeChange: fontSizeChange.value          
         }
 
         return obj;
@@ -389,13 +401,17 @@
             text: strHeadline.value, 
             textX: posX.value,
             textY: posY.value,
-            size: $("div#bigone").css("fontSize"),
+            size: getFontSizeValue(),
             fontIndex: fontIndex.value,
             colorIndex: colorIndex.value,
             rotation: rotation.value,
-            savedBaseHeight: window.innerHeight
+            savedBaseHeight: window.innerHeight,
+            containerWidth: containerWidth.value
 
         });
+
+console.log("data saved: " + tmp)
+
         const date = new Date().toJSON()
         var strKey = filename.value + date
         localStorage.setItem(strKey, tmp)
@@ -422,6 +438,8 @@
 
         var data = JSON.parse(localStorage.getItem(arrKeys[storageIndex]))
 
+console.log("data loaded: " +  JSON.stringify(data))
+
         //console.log(data)
         filename.value = data.imgFilename
         strHeadline.value = data.text
@@ -433,6 +451,7 @@
         colorIndex.value = data.colorIndex
         rotation.value  = data.rotation
         savedBaseHeight = data.savedBaseHeight    
+        containerWidth.value = data.containerWidth
         
         mode.value = 'playback'
         operation.value = 'playback'
@@ -479,8 +498,8 @@
             <button @click="changeHeadline()" :class="getEditButtonClass('changeHeadline')">NAME</button> 
             <button @click="moveText" :class="getEditButtonClass('move')">MOVE TEXT</button>
             <button @click="adjustFontIndex(1)" :class="getEditButtonClass('font')">CHANGE FONT</button>
-            <button @click="adjustFontSize(fontSizeInc)" :class="getEditButtonClass('size')"> BIGGER</button>
-            <button @click="adjustFontSize(fontSizeInc * -1)" :class="getEditButtonClass('size')"> SMALLER</button>
+            <!-- <button @click="adjustFontSize(fontSizeInc)" :class="getEditButtonClass('size')"> BIGGER</button>
+            <button @click="adjustFontSize(fontSizeInc * -1)" :class="getEditButtonClass('size')"> SMALLER</button> -->
             <button @click="adjustContainerWidth(containerWidthInc * 1)" :class="getEditButtonClass('width')"> &lt; BIGGER  &gt;</button>
             <button @click="adjustContainerWidth(containerWidthInc * -1)" :class="getEditButtonClass('width')"> &gt; SMALLER  &lt;</button>
             <button @click="adjustColorIndex(1)" :class="getEditButtonClass('color')">COLOR</button>
