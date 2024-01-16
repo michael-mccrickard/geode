@@ -181,7 +181,7 @@
     }
 
     function getFontSizeChangeValue() {
-        return fontSizeChange.value
+        return 0 //fontSizeChange.value
     }
 
     function adjustFontIndex(_val) {
@@ -312,7 +312,7 @@
             left: (posX.value / windowHeight * 100) + "%",
             fontSizeChange: fontSizeChange.value,          
         }
-console.log(obj)
+
         return obj;
     }
 
@@ -481,8 +481,8 @@ console.log(obj)
             <button @click="adjustFontIndex(1)" :class="getEditButtonClass('font')">CHANGE FONT</button>
             <button @click="adjustFontSize(fontSizeInc)" :class="getEditButtonClass('size')"> BIGGER</button>
             <button @click="adjustFontSize(fontSizeInc * -1)" :class="getEditButtonClass('size')"> SMALLER</button>
-            <button @click="adjustContainerWidth(containerWidthInc * 1)" :class="getEditButtonClass('width')"> &lt; WIDTH  &gt;</button>
-            <button @click="adjustContainerWidth(containerWidthInc * -1)" :class="getEditButtonClass('width')"> &gt; WIDTH  &lt;</button>
+            <button @click="adjustContainerWidth(containerWidthInc * 1)" :class="getEditButtonClass('width')"> &lt; BIGGER  &gt;</button>
+            <button @click="adjustContainerWidth(containerWidthInc * -1)" :class="getEditButtonClass('width')"> &gt; SMALLER  &lt;</button>
             <button @click="adjustColorIndex(1)" :class="getEditButtonClass('color')">COLOR</button>
             <button @click="rotateText()" :class="getEditButtonClass('rotate')">ROTATE TEXT</button> 
             <button @click="saveData()" class="unselected">SAVE</button> 
