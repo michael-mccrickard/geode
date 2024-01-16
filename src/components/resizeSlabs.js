@@ -1,8 +1,13 @@
 /*! jQuery slabtext plugin v2.4.0 MIT/GPL2 @freqdec */
 import $ from 'jquery'
+var fontSizeFractionOfWindowHeight = null;
+
+    export function getFontFraction() {
+        return fontSizeFractionOfWindowHeight;
+    }
 
     export function resizeSlabs( element, styleObj, options ){
-
+        
         const defaults = {
             // The ratio used when calculating the characters per line
             // (parent width / (font-size * fontRatio)).
@@ -16,13 +21,13 @@ import $ from 'jquery'
             "headerBreakpoint"      : null,
             "viewportBreakpoint"    : null,
             // Don't attach a resize event
-            "noResizeEvent"         : false,
+            "noResizeEvent"         : true,
             // By many milliseconds do we throttle the resize event
             "resizeThrottleTime"    : 300,
             // The maximum pixel font size the script can set
             "maxFontSize"           : 999,
             // Do we try to tweak the letter-spacing or word-spacing?
-            "postTweak"             : true,
+            "postTweak"             : false,
             // Decimal precision to use when setting CSS values
             "precision"             : 3,
             // The min num of chars a line has to contain
@@ -38,9 +43,11 @@ import $ from 'jquery'
 
         return $(element).each(function(){         
             
-var $this = $(this);
+            var $this = $(this);
 
-$this.text(styleObj.textVal)   
+            $this.text(styleObj.textVal)   
+
+            $this.width( styleObj.containerWidth + "%")
 
             if(options) {
                 $.extend(settings, options);
@@ -204,10 +211,21 @@ $this.text(styleObj.textVal)
                         });
                     };
 
-                    ratio    = parentWidth / $span.width();
-                    fontSize = parseFloat(this.style.fontSize) || origFontSize;
+                    //var windowHeight = window.innerHeight;
+                    //if ( props.savedBaseHeight) 
 
-                    $span.css("font-size", Math.min((fontSize * ratio).toFixed(settings.precision), settings.maxFontSize) + "px");
+                    ratio    = parentWidth / $span.width();
+                    fontSize = origFontSize; //parseFloat(this.style.fontSize) || origFontSize;
+
+                    let calcedFontSize = Math.min((fontSize * ratio).toFixed(settings.precision), settings.maxFontSize); 
+console.log("calcedFontSize b4 = " + calcedFontSize)
+
+                    if (styleObj.fontSizeChange)  calcedFontSize += styleObj.fontSizeChange;
+console.log("calcedFontSize after = " + calcedFontSize)
+
+                    fontSizeFractionOfWindowHeight = calcedFontSize / innerHeight * 100;
+console.log("fontSizeFractionOfWindowHeight = " + fontSizeFractionOfWindowHeight)
+                    $span.css("font-size", fontSizeFractionOfWindowHeight + "vh");
 
                     // Do we still have space to try to fill or crop
                     diff = !!settings.postTweak ? parentWidth - $span.width() : false;

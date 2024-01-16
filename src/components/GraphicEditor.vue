@@ -5,6 +5,7 @@
     import { ref, computed, onMounted, onUnmounted, onUpdated, getCurrentInstance } from 'vue'
     import { useMouse } from '../mouse.js'
     import $ from 'jquery'
+    import { getFontFraction } from './resizeSlabs.js'
 
     const instance = getCurrentInstance()
 
@@ -59,6 +60,10 @@
             if (operation.value == 'size') {
                 if (key == "ArrowRight" || key == "ArrowUp") adjustFontSize(fontSizeInc);
                 if (key == "ArrowLeft" || key == "ArrowDown") adjustFontSize(fontSizeInc * -1);
+            }
+            if (operation.value == 'width') {
+                if (key == "ArrowRight" || key == "ArrowUp") adjustContainerWidth(containerWidthInc);
+                if (key == "ArrowLeft" || key == "ArrowDown") adjustContainerWidth(containerWidthInc * -1);
             }
 
             if (operation.value == 'color') {
@@ -123,7 +128,7 @@
         posX.value = 0
         posY.value = 0
         rotation.value = 0
-        fontSize.value = 6
+        //fontSize.value = 6
         savedBaseHeight = 0;
         
         filename.value = "./mag_" + _txt + "_notext.png"
@@ -160,22 +165,24 @@
     //
     //******************************************************************************* */
 
+    const defaultFontSize = 16
     const arrFonts =  ["gasoek", "koulen", "lilita","molle","paytone","playball","staat", "alkatara", "squada"]
     const arrFontNames =  ["Gasoek One", "Koulen", "Lilita One","Molle","Paytone One","Playball","Staatliches", "Alkatara", "Squada One"]
     const fontIndex = ref(0)
-    const fontSize = ref(6)
-    const fontSizeInc = 0.25
+    const fontSizeChange = ref(0)
+    const fontSizeInc =  5//0.25
 
     function getFontClass() { 
-
         return "headline " + arrFonts[fontIndex.value]
     }
 
     function getFontName() { 
-
         return arrFontNames[fontIndex.value]
     }
 
+    function getFontSizeChangeValue() {
+        return fontSizeChange.value
+    }
 
     function adjustFontIndex(_val) {
         setOperation("font")
@@ -196,8 +203,7 @@
 
     function adjustFontSize(_val) {
         setOperation("size")
-
-        fontSize.value += _val;
+        fontSizeChange.value += _val;
     }
 
     //*******************************************************************************//
@@ -257,8 +263,22 @@
     //******************************************************************************* */
 
     var savedBaseHeight = 0;
-
     let headlineIndex = ref(0);
+    let containerWidth = ref(100);
+    const containerWidthInc = 5
+
+    function getContainerWidth() {
+        return containerWidth.value;
+    }
+
+    function adjustContainerWidth(_val) {
+        setOperation("width")
+        var temp = containerWidth.value
+
+        temp += _val
+
+        containerWidth.value =  Math.min(temp, 100)
+    }
 
     //text value for headline
     const strHeadline = ref(arrSourceNames[0]);
@@ -285,14 +305,12 @@
 
         if (savedBaseHeight) windowHeight = savedBaseHeight;
 
-        const str = "{color: " + getColor() + ", rotate: " + getRotation() + ", top:" + (posY.value / windowHeight * 100) + "%, left: " +  (posX.value / windowHeight * 100)  + "%, font-size: " + fontSize.value + "px}" 
-
         const obj = {
             color: getColor(),
             rotate: getRotation(),
             top: (posY.value / windowHeight * 100) + "%",
             left: (posX.value / windowHeight * 100) + "%",
-            fontSize: fontSize.value,          
+            fontSizeChange: fontSizeChange.value,          
         }
 console.log(obj)
         return obj;
@@ -445,12 +463,13 @@ console.log(obj)
         <InflatedText :textVal="textValue" 
                     :fontclass="getFontClass()" 
                     :fontName="getFontName()"
-                    fontSize="16px"
+                    :fontSizeChange = "getFontSizeChangeValue()"
                     :positionX="getPosX()" 
                     :positionY="getPosY()" 
                     :textColor="getColor()"
                     :rotation="getRotation()" 
                     :savedBasedHeight="savedBaseHeight"
+                    :containerWidth="getContainerWidth()"
 
         ></InflatedText>
     </div>
@@ -462,6 +481,8 @@ console.log(obj)
             <button @click="adjustFontIndex(1)" :class="getEditButtonClass('font')">CHANGE FONT</button>
             <button @click="adjustFontSize(fontSizeInc)" :class="getEditButtonClass('size')"> BIGGER</button>
             <button @click="adjustFontSize(fontSizeInc * -1)" :class="getEditButtonClass('size')"> SMALLER</button>
+            <button @click="adjustContainerWidth(containerWidthInc * 1)" :class="getEditButtonClass('width')"> &lt; WIDTH  &gt;</button>
+            <button @click="adjustContainerWidth(containerWidthInc * -1)" :class="getEditButtonClass('width')"> &gt; WIDTH  &lt;</button>
             <button @click="adjustColorIndex(1)" :class="getEditButtonClass('color')">COLOR</button>
             <button @click="rotateText()" :class="getEditButtonClass('rotate')">ROTATE TEXT</button> 
             <button @click="saveData()" class="unselected">SAVE</button> 

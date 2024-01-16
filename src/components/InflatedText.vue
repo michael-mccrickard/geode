@@ -14,7 +14,8 @@
         textVal: String, 
         rotation: String, 
         fontName: String,
-        fontSize: String
+        fontSizeChange: Number,
+        containerWidth: Number
     })
 
     function getStyleObject() {
@@ -25,7 +26,9 @@
             positionY: props.positionY,
             textColor: props.textColor,
             rotation: props.rotation, 
-            savedBaseHeight: props.savedBaseHeight
+            savedBaseHeight: props.savedBaseHeight,
+            fontSizeChange: props.fontSizeChange,
+            containerWidth: props.containerWidth
         }
     }
 
@@ -40,6 +43,7 @@
         $ele.css("rotate", props.rotation)
         $ele.css("top", (props.positionY / windowHeight * 100) + "%")
         $ele.css("left", (props.positionX / windowHeight * 100) + "%")
+        $ele.css("width", props.containerWidth + "%")
     }
 
     onMounted(() => {
@@ -48,23 +52,23 @@
 
         setTimeout(() => {
             resizeSlabs("div#bigone", obj);
-        }, 100);
+        }, 5);
 
         setTimeout(() => {
             updateMe()
-        }, 200);
+        }, 10);
     })
 
     onUpdated(() => {
         const obj = getStyleObject()
 
         setTimeout(() => {
-            resizeSlabs("div#bigone", obj);
-        }, 100);
+           resizeSlabs("div#bigone", obj);
+        }, 5);
 
         setTimeout(() => {
             updateMe()
-        }, 200);
+        }, 10);
     })
 
 </script>
