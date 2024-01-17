@@ -54,11 +54,11 @@
                 if (key == "ArrowRight" || key == "ArrowUp") adjustFontIndex(1);
                 if (key == "ArrowLeft" || key == "ArrowDown")  adjustFontIndex(-1); 
             }
-            if (operation.value == 'size') {
+            if (operation.value == 'fontsize') {
                 if (key == "ArrowRight" || key == "ArrowUp") adjustFontSize(fontSizeInc);
                 if (key == "ArrowLeft" || key == "ArrowDown") adjustFontSize(fontSizeInc * -1);
             }
-            if (operation.value == 'width') {
+            if (operation.value == 'containerwidth') {
                 if (key == "ArrowRight" || key == "ArrowUp") adjustContainerWidth(containerWidthInc);
                 if (key == "ArrowLeft" || key == "ArrowDown") adjustContainerWidth(containerWidthInc * -1);
             }
@@ -72,8 +72,8 @@
                 if (key == "ArrowRight" || key == "ArrowUp") adjustTextRotation(1);
                 if (key == "ArrowLeft" || key == "ArrowDown") adjustTextRotation(-1);
             }
-            if (operation.value == 'changeHeadline') {
-                if (key == "ArrowRight" || key == "ArrowUp") changeHeadline(1);
+            if (operation.value == 'changecontent') {
+                if (key == "ArrowRight" || key == "ArrowUp") changeContent(1);
             }
             if (operation.value == 'playback') {
                 if (key == "ArrowRight" || key == "ArrowUp") loadData(1);
@@ -128,7 +128,7 @@
         savedBaseHeight = 0;
         
         filename.value = "./mag_" + _txt + "_notext.png"
-        mode.value = "edit"
+        mode.value = "selectEditMode"
     }
 
     //*******************************************************************************//
@@ -283,9 +283,9 @@
     }
 
     function adjustContainerWidth(_val) {
-        setOperation("width")
-        var temp = containerWidth.value
+        setOperation("containerwidth")
 
+        var temp = containerWidth.value
         temp += _val
 
         containerWidth.value =  Math.min(temp, 100)
@@ -294,9 +294,9 @@
     //text value for headline
     const strHeadline = ref(arrSourceNames[0]);
 
-    function changeHeadline() {
+    function changeContent() {
 
-        operation.value = "changeHeadline"
+        operation.value = "changecontent"
 
         headlineIndex.value++
         
@@ -304,7 +304,7 @@
 
         strHeadline.value = arrSourceNames[ headlineIndex.value ] 
 
-       console.log("in changeHeadline, val is " + strHeadline.value)
+       //console.log("in changeContent, val is " + strHeadline.value)
 
     }
 
@@ -328,24 +328,43 @@
         return obj;
     }
 
+
+
     //*******************************************************************************//
     //
     //                    MODE AND OPERATIONS
     //
     //******************************************************************************* */
 
-    //mode: startup, new, edit or playback
+    //mode: startup, new, selectEditMode, editOverlay, editFont, editContainer  or playback
     const mode = ref("startup");
+
+    function inEditMode() {
+
+        const arrEditModes = ['selectEditMode','editOverlay', 'editFont', 'editContainer']
+
+        if (arrEditModes.indexOf(mode.value) !== -1) return true;
+
+        return false;
+    }
+
+    function setMode(str) {
+        mode.value = str
+    }
 
     function exitEditMode() {
         mode.value = 'startup'
+    }
+
+    function exitCurrentEditMode() {
+        mode.value = 'selectEditMode'
     }
 
     function loadNationButtons() {
         mode.value = 'new'
     }
 
-    //Edit operations: move, font, color, size, rotate
+    //Edit operations: changecontent, move, color, rotate, fontsize, containersize
     const operation = ref("move")
 
     function setOperation(_str) {
@@ -364,10 +383,8 @@
     }
 
     function getEditButtonClass(_str) {
-
         var _class = "";
-        _str == operation.value ? _class = "selected" : _class = "unselected"
-
+        _str === operation.value ? _class = "selected" : _class = "unselected"
         return _class
     }
 
@@ -376,13 +393,61 @@
     }
 
     function isMode(_str) {
-
-        if (_str === 'startup' && mode.value === 'startup') return true;
-        if (_str === 'new' && mode.value === 'new') return true;
-        if (_str === 'playback' && mode.value === 'playback') return true;
-        if (_str === 'edit' && mode.value === 'edit') return true;
-
+        if (_str === mode.value) return true;
         if (_str === 'editOrPlayback' && (mode.value === 'playback' || mode.value === 'edit')) return true;
+    }
+
+    function getMode() {
+        return mode.value
+    }
+
+    function getOperation() {
+        return operation.value
+    }
+
+    let editOptions = []   //freezeFontSize, freezeContainerWidth
+
+    function hasOption(opt) {
+        const index = editOptions.indexOf(opt)
+
+        if (index === -1) {
+            return false
+        }
+        else {
+            return true
+        }
+    }
+
+    function toggleOption(str, id) {
+
+        if (editOptions.indexOf(str) === -1) {
+            addEditOption(str)
+            $("button#" + id).removeClass("unselected")  
+            $("button#" + id).addClass("selected")
+                    
+        }
+        else {
+            removeEditOption(str)
+            $("button#" + id).removeClass("selected")  
+            $("button#" + id).addClass("unselected")
+        }
+
+        console.log(editOptions)
+    }
+
+    function removeEditOption(opt) {
+        const index = editOptions.indexOf(opt)
+
+        if (index === 0 && editOptions.length === 1) {
+            editOptions = []
+            return
+        }
+        editOptions.slice(0, index).concat(editOptions.slice(index+1))
+    }
+
+    function addEditOption(opt) {
+        const index = editOptions.indexOf(opt)
+        if (index === -1) editOptions.push(opt)
 
     }
 
@@ -410,7 +475,7 @@
 
         });
 
-console.log("data saved: " + tmp)
+        //console.log("data saved: " + tmp)
 
         const date = new Date().toJSON()
         var strKey = filename.value + date
@@ -438,9 +503,8 @@ console.log("data saved: " + tmp)
 
         var data = JSON.parse(localStorage.getItem(arrKeys[storageIndex]))
 
-console.log("data loaded: " +  JSON.stringify(data))
+        //console.log("data loaded: " +  JSON.stringify(data))
 
-        //console.log(data)
         filename.value = data.imgFilename
         strHeadline.value = data.text
 
@@ -477,35 +541,51 @@ console.log("data loaded: " +  JSON.stringify(data))
         </div>
     </div>
 
-    <div v-if = "isMode('edit')" class="container">
+    <div v-if = "inEditMode()" class="container">
         <img :src= "filename" @click="clickEventOnImg"/>
         <InflatedText :textVal="textValue" 
                     :fontclass="getFontClass()" 
                     :fontName="getFontName()"
                     :fontSizeChange = "getFontSizeChangeValue()"
                     :positionX="getPosX()" 
-                    :positionY="getPosY()" 
+                    :positionY="getPosY()"
                     :textColor="getColor()"
                     :rotation="getRotation()" 
                     :savedBasedHeight="savedBaseHeight"
                     :containerWidth="getContainerWidth()"
+                    :operation="getOperation()"
 
         ></InflatedText>
     </div>
     
     <div :class="getMenuBarStyle()">
-        <div v-if="isMode('edit')">
-            <button @click="changeHeadline()" :class="getEditButtonClass('changeHeadline')">NAME</button> 
-            <button @click="moveText" :class="getEditButtonClass('move')">MOVE TEXT</button>
+        <div v-if="isMode('selectEditMode')">
+            <button @click="setMode('editOverlay')">OVERLAY</button> 
+            <button @click="setMode('editFont')">FONT</button> 
+            <button @click="setMode('editContainer')">CONTAINER</button>
+            <button @click="exitEditMode()">EXIT</button>   
+        </div>
+        <div v-if="isMode('editOverlay')">
+            <button @click="changeContent()" :class="getEditButtonClass('changecontent')">CONTENT</button> 
+            <button @click="moveText" :class="getEditButtonClass('move')">MOVE</button>
+            <button @click="adjustColorIndex(1)" :class="getEditButtonClass('color')">COLOR</button>
+            <button @click="rotateText()" :class="getEditButtonClass('rotate')">ROTATE</button> 
+            <button @click="exitCurrentEditMode()">EXIT</button>  
+        </div>
+        <div v-if="isMode('editFont')">       
             <button @click="adjustFontIndex(1)" :class="getEditButtonClass('font')">CHANGE FONT</button>
-            <!-- <button @click="adjustFontSize(fontSizeInc)" :class="getEditButtonClass('size')"> BIGGER</button>
-            <button @click="adjustFontSize(fontSizeInc * -1)" :class="getEditButtonClass('size')"> SMALLER</button> -->
+            <button @click="adjustFontSize(fontSizeInc)" :class="getEditButtonClass('fontsize')"> BIGGER</button>
+            <button @click="adjustFontSize(fontSizeInc * -1)" :class="getEditButtonClass('fontsize')"> SMALLER</button>
+            <button id="btnFreezeFontSize" @click="toggleOption('freezeFontSize', 'btnFreezeFontSize')">FREEZE</button> 
+            <button @click="exitCurrentEditMode()">EXIT</button>  
+        </div> 
+        <div v-if="isMode('editContainer')"> 
             <button @click="adjustContainerWidth(containerWidthInc * 1)" :class="getEditButtonClass('width')"> &lt; BIGGER  &gt;</button>
             <button @click="adjustContainerWidth(containerWidthInc * -1)" :class="getEditButtonClass('width')"> &gt; SMALLER  &lt;</button>
-            <button @click="adjustColorIndex(1)" :class="getEditButtonClass('color')">COLOR</button>
-            <button @click="rotateText()" :class="getEditButtonClass('rotate')">ROTATE TEXT</button> 
+            <button id="btnFreezeContainerWidth" @click="toggleOption('freezeContainerWidth', 'btnFreezeContainerWidth')">FREEZE</button> 
             <button @click="saveData()" class="unselected">SAVE</button> 
-            <button @click="exitEditMode()">EXIT</button>      
+            <button @click="exitCurrentEditMode()">EXIT</button>  
+                
         </div>
         <div v-if="isMode('startup')">
             <button @click="loadNationButtons()" class="unselected">NEW</button> 

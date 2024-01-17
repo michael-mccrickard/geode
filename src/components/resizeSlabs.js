@@ -27,7 +27,7 @@ var fontSizeFractionOfWindowHeight = null;
             // The maximum pixel font size the script can set
             "maxFontSize"           : 999,
             // Do we try to tweak the letter-spacing or word-spacing?
-            "postTweak"             : false,
+            "postTweak"             : true,
             // Decimal precision to use when setting CSS values
             "precision"             : 3,
             // The min num of chars a line has to contain
@@ -45,7 +45,7 @@ var fontSizeFractionOfWindowHeight = null;
             
             var $this = $(this); 
 
-            $this.width( styleObj.containerWidth + "%")
+            if (styleObj.operation !== 'freeze') $this.width( styleObj.containerWidth + "%")
 
             const spanElement = $this.find("span");
 
@@ -219,16 +219,18 @@ var fontSizeFractionOfWindowHeight = null;
                     ratio    = parentWidth / $span.width();
                     fontSize = origFontSize; //parseFloat(this.style.fontSize) || origFontSize;
 
-                    let calcedFontSize = Math.min((fontSize * ratio).toFixed(settings.precision), settings.maxFontSize); 
-                    //console.log("calcedFontSize b4 = " + calcedFontSize)
-
-                    //Not currently using this (value is always 0)
-                    if (styleObj.fontSizeChange)  calcedFontSize += styleObj.fontSizeChange;
-                    //console.log("calcedFontSize after = " + calcedFontSize)
-
-                    fontSizeFractionOfWindowHeight = calcedFontSize / windowHeight * 100;
-                    //console.log("fontSizeFractionOfWindowHeight = " + fontSizeFractionOfWindowHeight)
-                    $this.css("font-size", fontSizeFractionOfWindowHeight + "vh");  //was applied to span previously
+                    if (styleObj.operation !== "freeze") {
+                        let calcedFontSize = Math.min((fontSize * ratio).toFixed(settings.precision), settings.maxFontSize); 
+                        //console.log("calcedFontSize b4 = " + calcedFontSize)
+    
+                        //Not currently using this (value is always 0)
+                        if (styleObj.fontSizeChange)  calcedFontSize += styleObj.fontSizeChange;
+                        //console.log("calcedFontSize after = " + calcedFontSize)
+    
+                        fontSizeFractionOfWindowHeight = calcedFontSize / windowHeight * 100;
+                        //console.log("fontSizeFractionOfWindowHeight = " + fontSizeFractionOfWindowHeight)
+                        $this.css("font-size", fontSizeFractionOfWindowHeight + "vh");  //was applied to span previously
+                    }
 
                     // Do we still have space to try to fill or crop
                     diff = !!settings.postTweak ? parentWidth - $span.width() : false;
@@ -239,6 +241,7 @@ var fontSizeFractionOfWindowHeight = null;
                     if(diff) {
                         $span.css((wordSpacing ? 'word' : 'letter') + '-spacing', (diff / (wordSpacing ? innerText.split(" ").length - 1 : innerText.length)).toFixed(settings.precision) + "px");
                     };
+
                 });
 
                 // Add the class slabtextdone to set a display:block on the child spans

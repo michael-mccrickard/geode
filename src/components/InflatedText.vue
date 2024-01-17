@@ -15,7 +15,8 @@
         rotation: String, 
         fontName: String,
         fontSizeChange: Number,
-        containerWidth: Number
+        containerWidth: Number,
+        operation: String
     })
 
     function getStyleObject() {
@@ -28,7 +29,8 @@
             rotation: props.rotation, 
             savedBaseHeight: props.savedBaseHeight,
             fontSizeChange: props.fontSizeChange,
-            containerWidth: props.containerWidth
+            containerWidth: props.containerWidth,
+            operation: props.operation
         }
     }
 
