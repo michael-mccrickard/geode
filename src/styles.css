@@ -84,9 +84,14 @@ html, body {
   margin: 0;
   padding: 0;
   line-height: 1;
+  overflow: hidden;
 }
 
-
+.editButton {
+  display: block;
+  padding: 8px;
+  margin-bottom: 5px;
+}
 
 .selected {
   background-color: blue;

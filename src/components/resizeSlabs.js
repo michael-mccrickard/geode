@@ -27,7 +27,7 @@ var fontSizeFractionOfWindowHeight = null;
             // The maximum pixel font size the script can set
             "maxFontSize"           : 999,
             // Do we try to tweak the letter-spacing or word-spacing?
-            "postTweak"             : true,
+            "postTweak"             : false,
             // Decimal precision to use when setting CSS values
             "precision"             : 3,
             // The min num of chars a line has to contain
@@ -35,6 +35,19 @@ var fontSizeFractionOfWindowHeight = null;
             // Callback function fired after the headline is redrawn
             "onRender"              : null
         };
+
+        let editOptions = styleObj.editOptions   //freezeFontSize, freezeContainerWidth
+
+        function hasOption(opt) {
+            const index = editOptions.indexOf(opt)
+    
+            if (index === -1) {
+                return false
+            }
+            else {
+                return true
+            }
+        }
 
 
         // Add the slabtexted classname to the body to initiate the styling of
@@ -45,7 +58,7 @@ var fontSizeFractionOfWindowHeight = null;
             
             var $this = $(this); 
 
-            if (styleObj.operation !== 'freeze') $this.width( styleObj.containerWidth + "%")
+            if ( hasOption("freezeContainerWidth") === false) $this.width( styleObj.containerWidth + "%")
 
             const spanElement = $this.find("span");
 
@@ -229,7 +242,7 @@ var fontSizeFractionOfWindowHeight = null;
     
                         fontSizeFractionOfWindowHeight = calcedFontSize / windowHeight * 100;
                         //console.log("fontSizeFractionOfWindowHeight = " + fontSizeFractionOfWindowHeight)
-                        $this.css("font-size", fontSizeFractionOfWindowHeight + "vh");  //was applied to span previously
+                        if ( hasOption("freezeFontSize") === false) $this.css("font-size", fontSizeFractionOfWindowHeight + "vh");  //was applied to span previously
                     }
 
                     // Do we still have space to try to fill or crop

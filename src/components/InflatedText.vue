@@ -16,7 +16,8 @@
         fontName: String,
         fontSizeChange: Number,
         containerWidth: Number,
-        operation: String
+        operation: String,
+        editOptions: Array
     })
 
     function getStyleObject() {
@@ -30,7 +31,8 @@
             savedBaseHeight: props.savedBaseHeight,
             fontSizeChange: props.fontSizeChange,
             containerWidth: props.containerWidth,
-            operation: props.operation
+            operation: props.operation,
+            editOptions: props.editOptions
         }
     }
 
@@ -62,6 +64,7 @@
     })
 
     onUpdated(() => {
+
         const obj = getStyleObject()
 
         setTimeout(() => {
