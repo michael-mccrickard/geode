@@ -93,6 +93,7 @@
     //********************************************************************************/
 
     function changeContainerPosition() {
+        setMode("editContainer")
         setOperation('changeContainerPosition')
     }
 
@@ -135,7 +136,8 @@ console.log("in createNew, rot value is " + rotation.value)
         savedBaseHeight = 0;
         
         filename.value = "./mag_" + _txt + "_notext.png"
-        mode.value = "selectEditMode"
+        mode.value = "editOverlay"
+        operation.value = "changeContent"
     }
 
     //*******************************************************************************//
@@ -203,6 +205,7 @@ console.log("in createNew, rot value is " + rotation.value)
     }
 
     function changeFontIndex(_val) {
+        setMode("editOverlay")
         setOperation("changeFontIndex")
 
         var tmp = fontIndex.value += _val
@@ -220,6 +223,7 @@ console.log("in createNew, rot value is " + rotation.value)
     }
 
     function changeFontSize(_val) {
+        setMode("editOverlay")
         setOperation("changeFontSize")
         fontSizeChange.value += _val;
     }
@@ -234,6 +238,7 @@ console.log("in createNew, rot value is " + rotation.value)
     const colorIndex = ref(0)
 
     function changeColorIndex(_val) {
+        setMode("editOverlay")
         setOperation("changeColorIndex")
 
         var tmp = colorIndex.value += _val
@@ -264,6 +269,7 @@ console.log("in createNew, rot value is " + rotation.value)
     const rotation = ref(0)
 
     function changeContainerRotation(_val) {
+        setMode("editContainer")
         setOperation("changeContainerRotation")
         rotation.value += _val
     }
@@ -288,6 +294,7 @@ console.log("in createNew, rot value is " + rotation.value)
     }
 
     function changeContainerSize(_val) {
+        setMode("editContainer")
         setOperation("changeContainerSize")
 
         var temp = containerWidth.value
@@ -300,7 +307,7 @@ console.log("in createNew, rot value is " + rotation.value)
     const strHeadline = ref(arrSourceNames[0]);
 
     function changeContent() {
-
+        setMode("editOverlay")
         operation.value = "changeContent"
 
         headlineIndex.value++
@@ -355,14 +362,17 @@ console.log("in createNew, rot value is " + rotation.value)
 
     function setMode(str) {
         mode.value = str
+
+        if (str === 'editContainer') {
+$("div#bigone").addClass("showBox")
+        }
+        else {
+$("div#bigone").removeClass("showBox")
+        }
     }
 
     function exitEditMode() {
         mode.value = 'startup'
-    }
-
-    function exitCurrentEditMode() {
-        mode.value = 'selectEditMode'
     }
 
     function loadNationButtons() {
@@ -390,6 +400,12 @@ console.log("in createNew, rot value is " + rotation.value)
     function getEditButtonClass(_str) {
         var _class = "";
         _str === operation.value ? _class = "editButton selected" : _class = "editButton unselected"
+        return _class
+    }
+
+    function getHeaderClass(_str) {
+        var _class = "";
+        _str === mode.value ? _class = "header selectedHeader" : _class = "header unselectedHeader"
         return _class
     }
 
@@ -577,33 +593,39 @@ console.log("in createNew, rot value is " + rotation.value)
     </div>
     
     <div :class="getMenuBarStyle()">
-        <div v-if="isMode('selectEditMode')">   
+<!--         <div v-if="isMode('selectEditMode')">   
             <button @click="setMode('editOverlay')" class="editButton unselected">OVERLAY</button> 
             <button @click="setMode('editContainer')" class="editButton unselected">CONTAINER</button>
             <button @click="exitEditMode()" class="editButton unselected">EXIT</button>   
-        </div>
-        <div v-if="isMode('editOverlay')">
-            <span>OVERLAY</span>
+        </div> -->
+
+        <hr style="margin-top: 5px;">
+
+        <div v-if="inEditMode()">
+            <span id="btnOverlay" :class="getHeaderClass('editOverlay')">OVERLAY</span>
             <button @click="changeContent()" :class="getEditButtonClass('changeContent')">CONTENT</button> 
             <button @click="changeFontIndex(1)" :class="getEditButtonClass('changeFontIndex')">CHANGE FONT</button>
             <button @click="changeColorIndex(1)" :class="getEditButtonClass('changeColorIndex')">FONT COLOR</button>
             <button @click="changeFontSize(0)" :class="getEditButtonClass('changeFontSize')">FONT SIZE</button>
             <button id="btnFreezeFontSize" class="editButton unselected" @click="toggleOption('freezeFontSize', 'btnFreezeFontSize')">FREEZE FONT SIZE</button> 
-            <button @click="exitCurrentEditMode()" class="editButton unselected">EXIT</button>  
-        </div>
-        <div v-if="isMode('editContainer')"> 
-            <span>CONTAINER</span>
+
+            <hr>
+
+            <span id="btnContainer" :class="getHeaderClass('editContainer')">CONTAINER</span>
             <button @click="changeContainerSize(0)" :class="getEditButtonClass('changeContainerSize')"> SIZE</button>
             <button @click="changeContainerPosition()" :class="getEditButtonClass('changeContainerPosition')">MOVE</button>
             <button @click="changeContainerRotation(0)" :class="getEditButtonClass('changeContainerRotation')">ROTATE</button> 
             <button id="btnFreezeContainerWidth" class="editButton unselected" @click="toggleOption('freezeContainerWidth', 'btnFreezeContainerWidth')">FREEZE</button> 
-            <button @click="saveData()" class="editButton unselected">SAVE</button> 
-            <button @click="exitCurrentEditMode()" class="editButton unselected">EXIT</button>  
+
+            <hr>
+
+            <button @click="saveData()" class="controlButton unselected">SAVE</button> 
+            <button @click="exitEditMode()" class="controlButton unselected">EXIT</button>  
                 
         </div>
         <div v-if="isMode('startup')">
-            <button @click="loadNationButtons()" class="editButton unselected">NEW</button> 
-            <button @click="loadData()" class="editButton unselected">LOAD</button>   
+            <button @click="loadNationButtons()" class="controlButton unselected">NEW</button> 
+            <button @click="loadData()" class="controlButton unselected">LOAD</button>   
         </div>
 
         <div v-if="isMode('selectBG')">

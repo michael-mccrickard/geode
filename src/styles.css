@@ -69,6 +69,7 @@ html, body {
   left: 0;
   top: 0;
   height: 100%;
+
 }
 
 .container img {
@@ -84,13 +85,35 @@ html, body {
   margin: 0;
   padding: 0;
   line-height: 1;
-  overflow: hidden;
+}
+
+.showBox {
+  background-color: rgb(0 0 0 / 50%);
 }
 
 .editButton {
   display: block;
-  padding: 8px;
+  padding: 4px;
   margin-bottom: 5px;
+}
+
+
+.controlButton {
+  display: inline;
+  padding: 4px;
+  margin: 5px;
+}
+
+.header {
+  margin-top: 4px;
+}
+
+.selectedHeader {
+  color: white;
+}
+
+.unselectedHeader {
+  color: black;
 }
 
 .selected {
