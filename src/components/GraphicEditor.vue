@@ -450,21 +450,37 @@ $("div#bigone").removeClass("showBox")
         }
     }
 
-    function toggleOption(str, id) {
+    function toggleOption(str, id, disableID) {
 
         if (editOptions.indexOf(str) === -1) {
+            
             console.log("adding " + str)
             addEditOption(str)
+
             $("button#" + id).removeClass("unselected")  
             $("button#" + id).addClass("selected")
+
+            $("button#" + disableID).removeClass("selected")  
+            $("button#" + disableID).addClass("unselected")
+
+            document.getElementById(disableID).disabled = true
                     
         }
         else {
+            
             console.log("removing " + str)
             removeEditOption(str)
+            
             $("button#" + id).removeClass("selected")  
             $("button#" + id).addClass("unselected")
+
+            $("button#" + disableID).removeClass("selected")  
+            $("button#" + disableID).addClass("unselected")
+
+            document.getElementById(disableID).disabled = false
         }
+
+        operation.value = "";
         
         updateKey.value++
         
@@ -606,16 +622,16 @@ $("div#bigone").removeClass("showBox")
             <button @click="changeContent()" :class="getEditButtonClass('changeContent')">CONTENT</button> 
             <button @click="changeFontIndex(1)" :class="getEditButtonClass('changeFontIndex')">CHANGE FONT</button>
             <button @click="changeColorIndex(1)" :class="getEditButtonClass('changeColorIndex')">FONT COLOR</button>
-            <button @click="changeFontSize(0)" :class="getEditButtonClass('changeFontSize')">FONT SIZE</button>
-            <button id="btnFreezeFontSize" class="editButton unselected" @click="toggleOption('freezeFontSize', 'btnFreezeFontSize')">FREEZE FONT SIZE</button> 
+            <button id="btnChangeFontSize" @click="changeFontSize(0)" :class="getEditButtonClass('changeFontSize')">FONT SIZE</button>
+            <button id="btnFreezeFontSize" class="editButton unselected" @click="toggleOption('freezeFontSize', 'btnFreezeFontSize', 'btnChangeFontSize')">FREEZE FONT SIZE</button> 
 
             <hr>
 
             <span id="btnContainer" :class="getHeaderClass('editContainer')">CONTAINER</span>
-            <button @click="changeContainerSize(0)" :class="getEditButtonClass('changeContainerSize')"> SIZE</button>
+            <button id="btnChangeContainerSize" @click="changeContainerSize(0)" :class="getEditButtonClass('changeContainerSize')"> SIZE</button>
             <button @click="changeContainerPosition()" :class="getEditButtonClass('changeContainerPosition')">MOVE</button>
             <button @click="changeContainerRotation(0)" :class="getEditButtonClass('changeContainerRotation')">ROTATE</button> 
-            <button id="btnFreezeContainerWidth" class="editButton unselected" @click="toggleOption('freezeContainerWidth', 'btnFreezeContainerWidth')">FREEZE</button> 
+            <button id="btnFreezeContainerWidth" class="editButton unselected" @click="toggleOption('freezeContainerWidth', 'btnFreezeContainerWidth','btnChangeContainerSize')">FREEZE CONTAINER SIZE</button> 
 
             <hr>
 
