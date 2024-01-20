@@ -1,101 +1,11 @@
 
 
 <script setup>
-    import InflatedText from "./InflatedText.vue";
-    import { ref, computed, onMounted, onUnmounted, onUpdated, reactive, toRefs } from 'vue'
-    import { getCurrentInstance } from 'vue'
-
+    import Overlay from "./Overlay.vue";
     import { useMouse } from '../mouse.js'
+    import { ref, computed, onMounted, onUnmounted, onUpdated, reactive, toRefs } from 'vue'
     import $ from 'jquery'
 
-    const instance = getCurrentInstance();
-
-    //const props = defineProps(['fontclass','positionX','positionY','appmode','savedHeight'])
-
-    //*******************************************************************************//
-    //
-    //                    ARROW KEYS
-    //
-    //********************************************************************************/
-
-    //The arrow keys are used to nudge the headline, adjust font and fontsize, cycle through text colors and rotate text 
-
-    onMounted(() => {
-        document.addEventListener('keydown', handleArrowKey)
-    })
-
-    onUnmounted(() => {
-        document.removeEventListener('keydown', handleArrowKey)
-    })
-
-    onUpdated(() => {
-
-    })
-
-    function handleArrowKey(event) {
-        const key = event.key
-
-        var amount = 1;
-
-        if (key.startsWith('Arrow')) {
-
-            if (operation.value == 'changeContainerPosition') {
-
-                if (event.shiftKey) {
-                    amount = 10;
-                }
-                else {
-                    amount = 5;
-                }
-                if (key == "ArrowUp") posY.value -= amount;
-                if (key == "ArrowDown") posY.value += amount;
-                if (key == "ArrowRight") posX.value += amount;
-                if (key == "ArrowLeft") posX.value -= amount;   
-                return;  
-            }
-
-            if (operation.value == 'changeFontIndex') {
-                if (key == "ArrowRight" || key == "ArrowUp") changeFontIndex(1);
-                if (key == "ArrowLeft" || key == "ArrowDown")  changeFontIndex(-1); 
-            }
-            if (operation.value == 'changeFontSize') {
-                if (key == "ArrowRight" || key == "ArrowUp") changeFontSize(fontSizeInc);
-                if (key == "ArrowLeft" || key == "ArrowDown") changeFontSize(fontSizeInc * -1);
-            }
-            if (operation.value == 'changeContainerSize') {
-                if (key == "ArrowRight" || key == "ArrowUp") changeContainerSize(containerWidthInc);
-                if (key == "ArrowLeft" || key == "ArrowDown") changeContainerSize(containerWidthInc * -1);
-            }
-
-            if (operation.value == 'changeColorIndex') {
-                if (key == "ArrowRight" || key == "ArrowUp") changeColorIndex(1);
-                if (key == "ArrowLeft" || key == "ArrowDown") changeColorIndex(-1);
-            }
-
-            if (operation.value == 'changeContainerRotation') {
-                if (key == "ArrowRight" || key == "ArrowUp") changeContainerRotation(1);
-                if (key == "ArrowLeft" || key == "ArrowDown") changeContainerRotation(-1);
-            }
-            if (operation.value == 'changeContent') {
-                if (key == "ArrowRight" || key == "ArrowUp") changeContent(1);
-            }
-            if (operation.value == 'playback') {
-                if (key == "ArrowRight" || key == "ArrowUp") loadData(1);
-            }
-
-        }
-    }
-
-    //*******************************************************************************//
-    //
-    //                    MOVE TEXT (ALSO SETS UP ARROW KEY MOVES)
-    //
-    //********************************************************************************/
-
-    function changeContainerPosition() {
-        setMode("editContainer")
-        setOperation('changeContainerPosition')
-    }
 
     //clicking the mouse on the image moves the headline
     const { x, y } = useMouse()
@@ -124,19 +34,19 @@
 
     const filename = ref("None")
 
+    let doc = {}
+
  //Clicking the NEW button initializes these variables and puts us in edit mode
     function createNewDocument(_txt) {
-console.log("createNewDoc")
         posX.value = 0
         posY.value = 0
-        rotation.value = 0
         savedBaseHeight = 0;
-
-        editOptions = []
         
         filename.value = "./mag_" + _txt + "_notext.png"
-        mode.value = "editOverlay"
-        operation.value = "changeContent"
+        mode.value = "newDocument"
+        //operation.value = "changeContent"
+
+doc = { filename: filename.value }
 
         updateKey.value++
     }
@@ -300,8 +210,6 @@ console.log("fontSizeInPixels is " + fontSizeInPixels)
     let headlineIndex = ref(0);
     let containerWidth = ref(100);
     const containerWidthInc = 5
-    let freezeContainerSizeFlag = false
-    let freezeFontSizeFlag = false
 
     function getContainerWidth() {
         return containerWidth.value;
@@ -336,13 +244,22 @@ console.log("fontSizeInPixels is " + fontSizeInPixels)
 
     const textValue = computed(() => strHeadline.value);
 
-    function getHeadlineStyle() {
+    function getOverlayData() {
+
+        const obj = {
+            text: "Your text here"
+        }
+
+        return obj;
+    }
+
+/*    
 
         var windowHeight = window.innerHeight;
 
         if (savedBaseHeight) windowHeight = savedBaseHeight;
 
-        const obj = {
+const obj = {
             color: getColor(),
             rotate: getRotation(),
             top: (posY.value / windowHeight * 100) + "%",
@@ -350,12 +267,7 @@ console.log("fontSizeInPixels is " + fontSizeInPixels)
             fontSize: fontSize.value + "vh",
             fontSizeChange: fontSizeChange.value,
             width: containerWidth.value + "%"          
-        }
-
-        return obj;
-    }
-
-
+        } */
 
     //*******************************************************************************//
     //
@@ -368,7 +280,7 @@ console.log("fontSizeInPixels is " + fontSizeInPixels)
 
     function inEditMode() {
 
-        const arrEditModes = ['selectEditMode','editOverlay', 'editContainer']
+        const arrEditModes = ['newDocument','editDocument']
 
         if (arrEditModes.indexOf(mode.value) !== -1) return true;
 
@@ -378,12 +290,12 @@ console.log("fontSizeInPixels is " + fontSizeInPixels)
     function setMode(str) {
         mode.value = str
 
-        if (str === 'editContainer') {
+/*         if (str === 'editContainer') {
 $("div#bigone").addClass("showBox")
         }
         else {
 $("div#bigone").removeClass("showBox")
-        }
+        } */
     }
 
     function exitEditMode() {
@@ -447,76 +359,7 @@ $("div#bigone").removeClass("showBox")
         return updateKey.value
     }
 
-    let editOptions = []
-
-    function getEditOptions(){
-        return editOptions
-    }
-
-
-    function hasOption(opt) {
-        const index = editOptions.indexOf(opt)
-
-        if (index === -1) {
-            return false
-        }
-        else {
-            return true
-        }
-    }
-
-    function setOption(value, str, id, disableID) {
-
-        if (value === true) {
-
-            console.log("adding " + str)
-            addEditOption(str)
-
-            $("button#" + id).removeClass("unselected")  
-            $("button#" + id).addClass("selected")
-
-            $("button#" + disableID).removeClass("selected")  
-            $("button#" + disableID).addClass("unselected")
-
-            document.getElementById(disableID).disabled = true
-                
-        }
-        if (value === false) {
-        
-            console.log("removing " + str)
-            removeEditOption(str)
-            
-            $("button#" + id).removeClass("selected")  
-            $("button#" + id).addClass("unselected")
-
-            $("button#" + disableID).removeClass("selected")  
-            $("button#" + disableID).addClass("unselected")
-
-            document.getElementById(disableID).disabled = false
-        }
-    }
-
-    function toggleOption(str, id, disableID) {
-
-        if (editOptions.indexOf(str) === -1) {
-            setOption(true, str, id, disableID)
-        }
-        else {
-            setOption(false, str, id, disableID)
-        }
-    }
-
-    function removeEditOption(opt) {
-        const index = editOptions.indexOf(opt)
-        if (index === -1) return
-
-        editOptions.splice(index, 1);
-    }
-
-    function addEditOption(opt) {
-        const index = editOptions.indexOf(opt)
-        if (index === -1) editOptions.push(opt)
-    }
+    
 
     //*******************************************************************************//
     //
@@ -553,8 +396,6 @@ $("div#bigone").removeClass("showBox")
             rotation: rotation.value,
             savedBaseHeight: window.innerHeight,
             containerWidth: containerWidth.value,
-            freezeFontSizeFlag: hasOption("freezeFontSize"),
-            freezeContainerSizeFlag: hasOption("freezeContainerSize")
         });
 
         //console.log("data saved: " + tmp)
@@ -598,19 +439,9 @@ $("div#bigone").removeClass("showBox")
         rotation.value  = data.rotation
         savedBaseHeight = data.savedBaseHeight    
         containerWidth.value = data.containerWidth
-        freezeFontSizeFlag = data.freezeFontSizeFlag
-        freezeContainerSizeFlag = data.freezeContainerSizeFlag
         
         mode.value = 'playback'
         operation.value = 'playback'
-    }
-
-    function configureUI() {
-
-        setOption(freezeFontSizeFlag, 'freezeFontSize', 'btnFreezeFontSize', 'btnChangeFontSize')
-        setOption(freezeContainerSizeFlag, 'freezeContainerSize', 'btnFreezeContainerSize', 'btnChangeContainerSize')
-
-        console.log("editOptions in configureUI: " + editOptions)
     }
 
     //*******************************************************************************//
@@ -618,6 +449,22 @@ $("div#bigone").removeClass("showBox")
     //                    TEMPLATE
     //
     //******************************************************************************* */
+
+    function exitNewDocument() {
+        mode.value = "startup"
+    }
+
+    let overlays = []
+
+    function createNewOverlay() {
+        let obj = {
+            text: "Your text here",
+        }
+        
+        overlays.push(obj)
+
+        mode.value = "editDocument"
+    }
     
 </script>
 
@@ -628,30 +475,20 @@ $("div#bigone").removeClass("showBox")
 
     <div v-if = "isMode('playback')" class="container">
         <img :src= "filename" @click="clickEventOnImg"/>
-        <div id="bigone" :class="getFontClass()" :style="getHeadlineStyle()">
-            <span id="testSpan">{{ textValue }}</span>
-        </div>
+
+
     </div>
 
     <div v-if = "inEditMode()" class="container">
         <img :src= "filename" @click="clickEventOnImg"/>
-        <InflatedText :textVal="textValue" 
-                    :fontclass="getFontClass()" 
-                    :fontName="getFontName()"
-                    :fontSize="getFormattedFontSizeValue()"
-                    :fontSizeChange = "getFontSizeChangeValue()"
-                    :positionX="getPosX()" 
-                    :positionY="getPosY()"
-                    :textColor="getColor()"
-                    :rotation="getRotation()" 
-                    :savedBasedHeight="savedBaseHeight"
-                    :containerWidth="getContainerWidth()"
-                    :operation="getOperation()"
-                    :editOptions = "getEditOptions()"
-                    :updateKey = "getUpdateKey()"
 
-
-        ></InflatedText>
+        <Overlay 
+            v-for="(obj, index) in overlays"
+            :key="'o' + index"
+            :obj="obj"
+            :positionX="getPosX()" 
+            :positionY="getPosY()"
+        />
     </div>
     
     <div :class="getMenuBarStyle()">
@@ -663,28 +500,7 @@ $("div#bigone").removeClass("showBox")
 
         <hr style="margin-top: 5px;">
 
-        <div v-if="inEditMode()">
-            <span id="btnOverlay" :class="getHeaderClass('editOverlay')">OVERLAY</span>
-            <button @click="changeContent()" :class="getEditButtonClass('changeContent')">CONTENT</button> 
-            <button @click="changeFontIndex(1)" :class="getEditButtonClass('changeFontIndex')">CHANGE FONT</button>
-            <button @click="changeColorIndex(1)" :class="getEditButtonClass('changeColorIndex')">FONT COLOR</button>
-            <button id="btnChangeFontSize" @click="changeFontSize(0)" :class="getEditButtonClass('changeFontSize')">FONT SIZE</button>
-            <button id="btnFreezeFontSize" class="editButton unselected" @click="toggleOption('freezeFontSize', 'btnFreezeFontSize', 'btnChangeFontSize')">FREEZE FONT SIZE</button> 
 
-            <hr>
-
-            <span id="btnContainer" :class="getHeaderClass('editContainer')">CONTAINER</span>
-            <button @click="changeContainerPosition()" :class="getEditButtonClass('changeContainerPosition')">MOVE</button>
-            <button @click="changeContainerRotation(0)" :class="getEditButtonClass('changeContainerRotation')">ROTATE</button> 
-            <button id="btnChangeContainerSize" @click="changeContainerSize(0)" :class="getEditButtonClass('changeContainerSize')"> SIZE</button>
-            <button id="btnFreezeContainerSize" class="editButton unselected" @click="toggleOption('freezeContainerSize', 'btnFreezeContainerSize','btnChangeContainerSize')">FREEZE CONTAINER SIZE</button> 
-
-            <hr>
-
-            <button @click="saveData()" class="controlButton unselected">SAVE</button> 
-            <button @click="exitEditMode()" class="controlButton unselected">EXIT</button>  
-                
-        </div>
         <div v-if="isMode('startup')">
             <button @click="loadNationButtons()" class="controlButton unselected">NEW</button> 
             <button @click="loadData()" class="controlButton unselected">LOAD</button>   
@@ -694,6 +510,11 @@ $("div#bigone").removeClass("showBox")
             <div v-for="item in arrSource" :key="item.id">
                 <button @click="createNewDocument(item.name)"> {{ item.name }}</button>
             </div>
+        </div>
+
+        <div v-if="isMode('newDocument')">
+            <button @click="createNewOverlay()">+ OVERLAY</button>    
+            <button @click="exitNewDocument()">EXIT</button>  
         </div>
 
         <div v-if="isMode('playback')">
@@ -706,3 +527,16 @@ $("div#bigone").removeClass("showBox")
     </div>
 </template>
 
+<!-- :textVal="textValue" 
+                    :fontclass="getFontClass()" 
+                    :fontName="getFontName()"
+                    :fontSize="getFormattedFontSizeValue()"
+                    :fontSizeChange = "getFontSizeChangeValue()"
+                    :positionX="getPosX()" 
+                    :positionY="getPosY()"
+                    :textColor="getColor()"
+                    :rotation="getRotation()" 
+                    :savedBasedHeight="savedBaseHeight"
+                    :containerWidth="getContainerWidth()"
+                    :operation="getOperation()"
+                    :updateKey = "getUpdateKey()" -->

@@ -36,21 +36,6 @@ var fontSizeFractionOfWindowHeight = null;
             "onRender"              : null
         };
 
-        let editOptions = styleObj.editOptions   //freezeFontSize, freezeContainerWidth
-
-        function hasOption(opt) {
-            const index = editOptions.indexOf(opt)
-    
-            if (index === -1) {
-                console.log(opt + " false in resize")
-                return false
-            }
-            else {
-                console.log(opt + " true in resize")
-                return true
-            }
-        }
-
 
         // Add the slabtexted classname to the body to initiate the styling of
         // the injected spans
@@ -60,7 +45,7 @@ var fontSizeFractionOfWindowHeight = null;
             
             var $this = $(this); 
 
-            if ( hasOption("freezeContainerWidth") === false) $this.width( styleObj.containerWidth + "%")
+            $this.width( styleObj.containerWidth + "%")
 
             const spanElement = $this.find("span");
 
@@ -244,7 +229,7 @@ var fontSizeFractionOfWindowHeight = null;
 
                     fontSizeFractionOfWindowHeight = calcedFontSize / windowHeight * 100;
                     //console.log("fontSizeFractionOfWindowHeight = " + fontSizeFractionOfWindowHeight)
-                    if ( hasOption("freezeFontSize") === false) $this.css("font-size", fontSizeFractionOfWindowHeight + "vh");  //was applied to span previously
+                    $this.css("font-size", fontSizeFractionOfWindowHeight + "vh");  //was applied to span previously
 
 
                     // Do we still have space to try to fill or crop
