@@ -126,18 +126,19 @@
 
  //Clicking the NEW button initializes these variables and puts us in edit mode
     function createNewDocument(_txt) {
-
+console.log("createNewDoc")
         posX.value = 0
         posY.value = 0
         rotation.value = 0
-
-console.log("in createNew, rot value is " + rotation.value)
-
         savedBaseHeight = 0;
+
+        editOptions = []
         
         filename.value = "./mag_" + _txt + "_notext.png"
         mode.value = "editOverlay"
         operation.value = "changeContent"
+
+        updateKey.value++
     }
 
     //*******************************************************************************//
@@ -190,18 +191,29 @@ console.log("in createNew, rot value is " + rotation.value)
         return fontSizeChange.value
     }
 
-    function getFontSizeValue() {
+    function getFormattedFontSizeValue() {
+        return fontSize.value + "vh"
+    }
+
+    function calcFontSizeValue() {
 
         let windowHeight = window.innerHeight
         if ( savedBaseHeight) windowHeight = savedBaseHeight
         
         let fontSizeInPixels = $("div#bigone").css("font-size")
 
-        fontSizeInPixels = fontSizeInPixels.slice(0, -2);
+        if (fontSizeInPixels) {
 
-        fontSize.value = fontSizeInPixels / windowHeight * 100
+            fontSizeInPixels = fontSizeInPixels.slice(0, -2);
 
-        return fontSize.value
+console.log("fontSizeInPixels is " + fontSizeInPixels)
+
+            fontSize.value = fontSizeInPixels / windowHeight * 100
+
+            return fontSize.value
+        }
+        return null
+
     }
 
     function changeFontIndex(_val) {
@@ -288,6 +300,8 @@ console.log("in createNew, rot value is " + rotation.value)
     let headlineIndex = ref(0);
     let containerWidth = ref(100);
     const containerWidthInc = 5
+    let freezeContainerSizeFlag = false
+    let freezeFontSizeFlag = false
 
     function getContainerWidth() {
         return containerWidth.value;
@@ -334,7 +348,8 @@ console.log("in createNew, rot value is " + rotation.value)
             top: (posY.value / windowHeight * 100) + "%",
             left: (posX.value / windowHeight * 100) + "%",
             fontSize: fontSize.value + "vh",
-            fontSizeChange: fontSizeChange.value          
+            fontSizeChange: fontSizeChange.value,
+            width: containerWidth.value + "%"          
         }
 
         return obj;
@@ -450,10 +465,10 @@ $("div#bigone").removeClass("showBox")
         }
     }
 
-    function toggleOption(str, id, disableID) {
+    function setOption(value, str, id, disableID) {
 
-        if (editOptions.indexOf(str) === -1) {
-            
+        if (value === true) {
+
             console.log("adding " + str)
             addEditOption(str)
 
@@ -464,10 +479,10 @@ $("div#bigone").removeClass("showBox")
             $("button#" + disableID).addClass("unselected")
 
             document.getElementById(disableID).disabled = true
-                    
+                
         }
-        else {
-            
+        if (value === false) {
+        
             console.log("removing " + str)
             removeEditOption(str)
             
@@ -479,17 +494,22 @@ $("div#bigone").removeClass("showBox")
 
             document.getElementById(disableID).disabled = false
         }
+    }
 
-        operation.value = "";
-        
-        updateKey.value++
-        
-         console.log("in toggleOptions2, editOptions follows")
-        console.log(editOptions) 
+    function toggleOption(str, id, disableID) {
+
+        if (editOptions.indexOf(str) === -1) {
+            setOption(true, str, id, disableID)
+        }
+        else {
+            setOption(false, str, id, disableID)
+        }
     }
 
     function removeEditOption(opt) {
         const index = editOptions.indexOf(opt)
+        if (index === -1) return
+
         editOptions.splice(index, 1);
     }
 
@@ -504,6 +524,20 @@ $("div#bigone").removeClass("showBox")
     //
     //******************************************************************************* */
 
+    function editLoadedDocument() {
+        setMode("editOverlay")
+        setOperation("changeContent")
+
+        setTimeout(() => {
+            configureUI()
+        }, 100);
+
+        setTimeout(() => {
+            updateKey.value++
+        }, 200);
+
+    }
+
     var storageIndex = -1;
 
     function saveData() {
@@ -513,13 +547,14 @@ $("div#bigone").removeClass("showBox")
             text: strHeadline.value, 
             textX: posX.value,
             textY: posY.value,
-            size: getFontSizeValue(),
+            size: calcFontSizeValue(),
             fontIndex: fontIndex.value,
             colorIndex: colorIndex.value,
             rotation: rotation.value,
             savedBaseHeight: window.innerHeight,
-            containerWidth: containerWidth.value
-
+            containerWidth: containerWidth.value,
+            freezeFontSizeFlag: hasOption("freezeFontSize"),
+            freezeContainerSizeFlag: hasOption("freezeContainerSize")
         });
 
         //console.log("data saved: " + tmp)
@@ -536,7 +571,7 @@ $("div#bigone").removeClass("showBox")
             arrKeys = JSON.parse(data)
         }
         arrKeys.push(strKey)
-        //console.log(JSON.stringify(arrKeys))
+
         localStorage.setItem("keys", JSON.stringify(arrKeys))
     }
 
@@ -563,9 +598,19 @@ $("div#bigone").removeClass("showBox")
         rotation.value  = data.rotation
         savedBaseHeight = data.savedBaseHeight    
         containerWidth.value = data.containerWidth
+        freezeFontSizeFlag = data.freezeFontSizeFlag
+        freezeContainerSizeFlag = data.freezeContainerSizeFlag
         
         mode.value = 'playback'
         operation.value = 'playback'
+    }
+
+    function configureUI() {
+
+        setOption(freezeFontSizeFlag, 'freezeFontSize', 'btnFreezeFontSize', 'btnChangeFontSize')
+        setOption(freezeContainerSizeFlag, 'freezeContainerSize', 'btnFreezeContainerSize', 'btnChangeContainerSize')
+
+        console.log("editOptions in configureUI: " + editOptions)
     }
 
     //*******************************************************************************//
@@ -584,7 +629,7 @@ $("div#bigone").removeClass("showBox")
     <div v-if = "isMode('playback')" class="container">
         <img :src= "filename" @click="clickEventOnImg"/>
         <div id="bigone" :class="getFontClass()" :style="getHeadlineStyle()">
-            <span>{{ textValue }}</span>
+            <span id="testSpan">{{ textValue }}</span>
         </div>
     </div>
 
@@ -593,6 +638,7 @@ $("div#bigone").removeClass("showBox")
         <InflatedText :textVal="textValue" 
                     :fontclass="getFontClass()" 
                     :fontName="getFontName()"
+                    :fontSize="getFormattedFontSizeValue()"
                     :fontSizeChange = "getFontSizeChangeValue()"
                     :positionX="getPosX()" 
                     :positionY="getPosY()"
@@ -628,10 +674,10 @@ $("div#bigone").removeClass("showBox")
             <hr>
 
             <span id="btnContainer" :class="getHeaderClass('editContainer')">CONTAINER</span>
-            <button id="btnChangeContainerSize" @click="changeContainerSize(0)" :class="getEditButtonClass('changeContainerSize')"> SIZE</button>
             <button @click="changeContainerPosition()" :class="getEditButtonClass('changeContainerPosition')">MOVE</button>
             <button @click="changeContainerRotation(0)" :class="getEditButtonClass('changeContainerRotation')">ROTATE</button> 
-            <button id="btnFreezeContainerWidth" class="editButton unselected" @click="toggleOption('freezeContainerWidth', 'btnFreezeContainerWidth','btnChangeContainerSize')">FREEZE CONTAINER SIZE</button> 
+            <button id="btnChangeContainerSize" @click="changeContainerSize(0)" :class="getEditButtonClass('changeContainerSize')"> SIZE</button>
+            <button id="btnFreezeContainerSize" class="editButton unselected" @click="toggleOption('freezeContainerSize', 'btnFreezeContainerSize','btnChangeContainerSize')">FREEZE CONTAINER SIZE</button> 
 
             <hr>
 
@@ -652,6 +698,7 @@ $("div#bigone").removeClass("showBox")
 
         <div v-if="isMode('playback')">
             <button @click="exitPlaybackMode()">EXIT</button>    
+            <button @click="editLoadedDocument()">EDIT</button>  
         </div>
         
     </div>

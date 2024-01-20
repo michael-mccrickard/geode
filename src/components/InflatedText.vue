@@ -14,11 +14,23 @@
         textVal: String, 
         rotation: String, 
         fontName: String,
+        fontSize: String,
         fontSizeChange: Number,
         containerWidth: Number,
         operation: String,
         editOptions: Array
     })
+
+    function hasOption(opt) {
+        const index = props.editOptions.indexOf(opt)
+
+        if (index === -1) {
+            return false
+        }
+        else {
+            return true
+        }
+    }
 
     function getStyleObject() {
     
@@ -29,6 +41,7 @@
             textColor: props.textColor,
             rotation: props.rotation, 
             savedBaseHeight: props.savedBaseHeight,
+            fontSize: props.fontSize,
             fontSizeChange: props.fontSizeChange,
             containerWidth: props.containerWidth,
             operation: props.operation,
@@ -48,19 +61,27 @@
         $ele.css("top", (props.positionY / windowHeight * 100) + "%")
         $ele.css("left", (props.positionX / windowHeight * 100) + "%")
         $ele.css("width", props.containerWidth + "%")
+
+        if (hasOption("freezeFontSize")) {
+            console.log("set fontsize in inflated b/c fontsize is frozen")
+            console.log(props.fontSize)
+            $ele.css("fontSize", props.fontSize)
+        }
     }
 
     onMounted(() => {
 
         const obj = getStyleObject()
 
-        setTimeout(() => {
-            resizeSlabs("div#bigone", obj);
-        }, 5);
+        if (hasOption("freezeFontSize") === false) {
+            setTimeout(() => {
+                resizeSlabs("div#bigone", obj);
+            }, 5);
+        }
 
         setTimeout(() => {
-            updateMe()
-        }, 10);
+           updateMe();
+        }, 10)
     })
 
     onUpdated(() => {
@@ -72,7 +93,7 @@
         }, 5);
 
         setTimeout(() => {
-            updateMe()
+           updateMe();
         }, 10);
     })
 

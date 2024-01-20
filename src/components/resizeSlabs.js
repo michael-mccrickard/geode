@@ -42,9 +42,11 @@ var fontSizeFractionOfWindowHeight = null;
             const index = editOptions.indexOf(opt)
     
             if (index === -1) {
+                console.log(opt + " false in resize")
                 return false
             }
             else {
+                console.log(opt + " true in resize")
                 return true
             }
         }
@@ -232,18 +234,18 @@ var fontSizeFractionOfWindowHeight = null;
                     ratio    = parentWidth / $span.width();
                     fontSize = origFontSize; //parseFloat(this.style.fontSize) || origFontSize;
 
-                    if (styleObj.operation !== "freeze") {
-                        let calcedFontSize = Math.min((fontSize * ratio).toFixed(settings.precision), settings.maxFontSize); 
-                        //console.log("calcedFontSize b4 = " + calcedFontSize)
-    
-                        //Not currently using this (value is always 0)
-                        if (styleObj.fontSizeChange)  calcedFontSize += styleObj.fontSizeChange;
-                        //console.log("calcedFontSize after = " + calcedFontSize)
-    
-                        fontSizeFractionOfWindowHeight = calcedFontSize / windowHeight * 100;
-                        //console.log("fontSizeFractionOfWindowHeight = " + fontSizeFractionOfWindowHeight)
-                        if ( hasOption("freezeFontSize") === false) $this.css("font-size", fontSizeFractionOfWindowHeight + "vh");  //was applied to span previously
-                    }
+
+                    let calcedFontSize = Math.min((fontSize * ratio).toFixed(settings.precision), settings.maxFontSize); 
+                    //console.log("calcedFontSize b4 = " + calcedFontSize)
+
+                    //Not currently using this (value is always 0)
+                    if (styleObj.fontSizeChange)  calcedFontSize += styleObj.fontSizeChange;
+                    //console.log("calcedFontSize after = " + calcedFontSize)
+
+                    fontSizeFractionOfWindowHeight = calcedFontSize / windowHeight * 100;
+                    //console.log("fontSizeFractionOfWindowHeight = " + fontSizeFractionOfWindowHeight)
+                    if ( hasOption("freezeFontSize") === false) $this.css("font-size", fontSizeFractionOfWindowHeight + "vh");  //was applied to span previously
+
 
                     // Do we still have space to try to fill or crop
                     diff = !!settings.postTweak ? parentWidth - $span.width() : false;
