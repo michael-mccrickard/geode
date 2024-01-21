@@ -2,6 +2,7 @@
 
 <script setup>
     import Overlay from "./Overlay.vue";
+    import Stub from "./Stub.vue";
     import { useMouse } from '../mouse.js'
     import { ref, computed, onMounted, onUnmounted, onUpdated, reactive, toRefs } from 'vue'
     import $ from 'jquery'
@@ -32,7 +33,7 @@
     //
     //********************************************************************************/
 
-    const filename = ref("None")
+    const filename = ref("")
 
     let doc = {}
 
@@ -43,8 +44,7 @@
         savedBaseHeight = 0;
         
         filename.value = "./mag_" + _txt + "_notext.png"
-        mode.value = "newDocument"
-        //operation.value = "changeContent"
+        mode.value = "addOrSelectOverlay"
 
 doc = { filename: filename.value }
 
@@ -115,8 +115,6 @@ doc = { filename: filename.value }
         if (fontSizeInPixels) {
 
             fontSizeInPixels = fontSizeInPixels.slice(0, -2);
-
-console.log("fontSizeInPixels is " + fontSizeInPixels)
 
             fontSize.value = fontSizeInPixels / windowHeight * 100
 
@@ -278,14 +276,7 @@ const obj = {
     //mode: startup, selectBG, selectEditMode, editOverlay, editContainer  or playback
     const mode = ref("startup");
 
-    function inEditMode() {
 
-        const arrEditModes = ['newDocument','editDocument']
-
-        if (arrEditModes.indexOf(mode.value) !== -1) return true;
-
-        return false;
-    }
 
     function setMode(str) {
         mode.value = str
@@ -321,20 +312,9 @@ $("div#bigone").removeClass("showBox")
         else {
             return "right-justified-div"
         }
-
     }
 
-    function getEditButtonClass(_str) {
-        var _class = "";
-        _str === operation.value ? _class = "editButton selected" : _class = "editButton unselected"
-        return _class
-    }
 
-    function getHeaderClass(_str) {
-        var _class = "";
-        _str === mode.value ? _class = "header selectedHeader" : _class = "header unselectedHeader"
-        return _class
-    }
 
     function exitPlaybackMode() {
         mode.value = "startup"
@@ -444,11 +424,7 @@ $("div#bigone").removeClass("showBox")
         operation.value = 'playback'
     }
 
-    //*******************************************************************************//
-    //
-    //                    TEMPLATE
-    //
-    //******************************************************************************* */
+
 
     function exitNewDocument() {
         mode.value = "startup"
@@ -456,50 +432,115 @@ $("div#bigone").removeClass("showBox")
 
     let overlays = []
 
+    const overlayIndex = ref(0)
+
+    let counter = -1
+
     function createNewOverlay() {
+        
+        counter++
+
         let obj = {
-            text: "Your text here",
+            text: "Your text here " + counter,
+            ID: counter,
+            positionX: 0,
+            positionY: 0,
+            fontSize: "64px"
         }
         
         overlays.push(obj)
 
-        mode.value = "editDocument"
+        overlayIndex.value = counter
+
+        mode.value = "editOverlay"
+
+        console.log(overlays.filter(obj => obj.ID !== overlayIndex.value))
     }
+
+    function getOverlayIndex() {
+        return overlayIndex.value
+    }
+
+    function exitEditOverlay() {
+
+        mode.value = "addOrSelectOverlay"
+    }
+
+    function fileIsLoaded() {
+        if (filename.value.length) {
+            return true
+        }
+        else {
+            return false
+        }
+
+    }
+
+    function filteredOverlays() {
+        return overlays.filter(obj => obj.ID !== overlayIndex.value)
+    }
+
+    function loadDocuments() {
+        const documents = JSON.parse(localStorage.getItem('geode-documents') || '[]');
+        return documents;
+    }
+    function saveDocuments() {
+        localStorage.setItem('geode-documents', JSON.stringify(documents));
+    }
+    function selectDocument(docId) {
+        selectedDocument = documents.find(doc => doc.id === docId);
+    }
+    function selectOverlay(overlayId) {
+        if (selectedDocument) {
+            selectedOverlay = selectedDocument.overlays.find(overlay => overlay.id === overlayId);
+        }
+    }
+    function deleteDocument(docId) {
+        documents = documents.filter(doc => doc.id !== docId);
+        saveDocuments();
+    }
+    function deleteOverlay(overlayId) {
+        if (selectedDocument) {
+            selectedDocument.overlays = selectedDocument.overlays.filter(overlay => overlay.id !== overlayId);
+        }
+        this.saveDocuments();
+    }
+
+    //*******************************************************************************//
+    //
+    //                    TEMPLATE
+    //
+    //******************************************************************************* */
     
 </script>
 
 
-
 <template>
-    <div>
 
-    <div v-if = "isMode('playback')" class="container">
+    <div v-if = "fileIsLoaded()" class="container">
         <img :src= "filename" @click="clickEventOnImg"/>
-
-
     </div>
 
-    <div v-if = "inEditMode()" class="container">
-        <img :src= "filename" @click="clickEventOnImg"/>
-
-        <Overlay 
-            v-for="(obj, index) in overlays"
-            :key="'o' + index"
-            :obj="obj"
-            :positionX="getPosX()" 
-            :positionY="getPosY()"
-        />
+     <div v-if = "isMode('editOverlay')" id="editOverlaySpace">
+            <Overlay
+                :key="getOverlayIndex()"
+                :obj="overlays[getOverlayIndex()]"
+                :positionX="overlays[getOverlayIndex()].positionX" 
+                :positionY="overlays[getOverlayIndex()].positionY"
+            />
     </div>
-    
-    <div :class="getMenuBarStyle()">
-<!--         <div v-if="isMode('selectEditMode')">   
-            <button @click="setMode('editOverlay')" class="editButton unselected">OVERLAY</button> 
-            <button @click="setMode('editContainer')" class="editButton unselected">CONTAINER</button>
-            <button @click="exitEditMode()" class="editButton unselected">EXIT</button>   
-        </div> -->
 
-        <hr style="margin-top: 5px;">
+    <div id="stubOverlaySpace">
+            <Stub 
+                v-for="(obj, index) in filteredOverlays()"
+                :key="index"
+                :obj="obj"
+                :positionX="obj.positionX" 
+                :positionY="obj.positionY"
+            />
+    </div>
 
+    <div class="right-justified-div">
 
         <div v-if="isMode('startup')">
             <button @click="loadNationButtons()" class="controlButton unselected">NEW</button> 
@@ -512,9 +553,14 @@ $("div#bigone").removeClass("showBox")
             </div>
         </div>
 
-        <div v-if="isMode('newDocument')">
+        <div v-if="isMode('addOrSelectOverlay')">
             <button @click="createNewOverlay()">+ OVERLAY</button>    
             <button @click="exitNewDocument()">EXIT</button>  
+        </div>
+
+        <div v-if="isMode('editOverlay')" class="saveOrExitContainer">
+            <button @click="saveOverlay()" >SAVE</button>    
+            <button @click="exitEditOverlay()">EXIT</button>  
         </div>
 
         <div v-if="isMode('playback')">
@@ -523,9 +569,8 @@ $("div#bigone").removeClass("showBox")
         </div>
         
     </div>
-        
-    </div>
 </template>
+
 
 <!-- :textVal="textValue" 
                     :fontclass="getFontClass()" 

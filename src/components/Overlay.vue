@@ -12,8 +12,15 @@
         },
         positionY: {
             type: Number
+        },
+        ID: {
+            type: String
         }
     })
+
+    //Reactive vars to track changes to overlay
+
+    const mode = ref("editOverlay")
 
 //*******************************************************************************//
 //
@@ -25,6 +32,7 @@
 
 onMounted(() => {
     document.addEventListener('keydown', handleArrowKey)
+
 })
 
 onUnmounted(() => {
@@ -104,25 +112,41 @@ function changeContainerPosition() {
 
 
 function getStyleObject() {
-    
+    console.log
     return {
         left: props.positionX + "px",
-        top: props.positionY+ "px"
+        top: props.positionY + "px",
+        fontSize: props.obj.fontSize
     }
 }
+
+function getEditButtonClass(_str) {
+        var _class = "";
+        _str === operation.value ? _class = "editButton selected" : _class = "editButton unselected"
+        return _class
+    }
+
+    function getHeaderClass(_str) {
+        var _class = "";
+        _str === mode.value ? _class = "header selectedHeader" : _class = "header unselectedHeader"
+        return _class
+    }
+
+    function getDivID() {
+        return props.ID
+    }
 
 </script>
 
 
 <template>
     <div>
-        <div id="bigone" class="headline" :style="getStyleObject()">
-            <span>{{ props.obj.text }}</span>
+        <div :id="getDivID()" class="headline selectedOverlay" :style="getStyleObject()">
+            <span>{{props.obj.text}} </span>
         </div>
-    </div>
 
 
-<!--     <div v-if="inEditMode()">
+    <div class="editoverlay-div">
             <span id="btnOverlay" :class="getHeaderClass('editOverlay')">OVERLAY</span>
             <button @click="changeContent()" :class="getEditButtonClass('changeContent')">CONTENT</button> 
             <button @click="changeFontIndex(1)" :class="getEditButtonClass('changeFontIndex')">CHANGE FONT</button>
@@ -137,9 +161,8 @@ function getStyleObject() {
             <button id="btnChangeContainerSize" @click="changeContainerSize(0)" :class="getEditButtonClass('changeContainerSize')"> SIZE</button>
 
             <hr>
-
-            <button @click="saveData()" class="controlButton unselected">SAVE</button> 
-            <button @click="exitEditMode()" class="controlButton unselected">EXIT</button>  
                 
-        </div> -->
+        </div>
+
+    </div>
 </template>

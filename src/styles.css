@@ -46,6 +46,15 @@ html, body {
   padding: 0;
 }
 
+.editoverlay-div {
+  width: 10%;
+  position: fixed; /* or position: absolute; depending on your requirements */
+  top: 0;
+  right: 0;
+  padding-left: 1vw; 
+  z-index: 1;
+}
+
 
 .right-justified-div {
   width: 10%;
@@ -54,12 +63,18 @@ html, body {
   right: 0;
   padding-left: 1vw; 
   height: 100vh;
-  background-color: red; /* Replace with your desired background color */
-  z-index: 1;
+  z-index: 0;
+  background-color: rgb(70, 0, 220); /* Replace with your desired background color */   
 }
 
 .editmode-div {
     background-color: rgb(70, 0, 220); /* Replace with your desired background color */   
+}
+
+.saveOrExitContainer {
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }
 
 
@@ -85,8 +100,13 @@ html, body {
   margin: 0;
   padding: 0;
   line-height: 1;
-font-size: 64px;
-color: white;
+  color: white;
+}
+
+.selectedOverlay {
+  border-style: solid;
+  border-color: rgb(255, 0, 0);
+  border-width: 1px;
 }
 
 .showBox {
