@@ -42,6 +42,9 @@
         posX.value = 0
         posY.value = 0
         savedBaseHeight = 0;
+
+        overlays = []
+        overlayIndex.value = 0
         
         filename.value = "./mag_" + _txt + "_notext.png"
         mode.value = "addOrSelectOverlay"
@@ -105,12 +108,12 @@ doc = { filename: filename.value }
         return fontSize.value + "vh"
     }
 
-    function calcFontSizeValue() {
+    function calcFontSizeValue(ID) {
 
         let windowHeight = window.innerHeight
         if ( savedBaseHeight) windowHeight = savedBaseHeight
         
-        let fontSizeInPixels = $("div#bigone").css("font-size")
+        let fontSizeInPixels = $("div#" + ID).css("font-size")
 
         if (fontSizeInPixels) {
 
@@ -240,8 +243,6 @@ doc = { filename: filename.value }
 
     }
 
-    const textValue = computed(() => strHeadline.value);
-
     function getOverlayData() {
 
         const obj = {
@@ -280,13 +281,6 @@ const obj = {
 
     function setMode(str) {
         mode.value = str
-
-/*         if (str === 'editContainer') {
-$("div#bigone").addClass("showBox")
-        }
-        else {
-$("div#bigone").removeClass("showBox")
-        } */
     }
 
     function exitEditMode() {
@@ -442,10 +436,11 @@ $("div#bigone").removeClass("showBox")
 
         let obj = {
             text: "Your text here " + counter,
-            ID: counter,
+            ID: "o" + counter,
             positionX: 0,
             positionY: 0,
-            fontSize: "64px"
+            fontSize: "64px",
+            rotate: "0deg"
         }
         
         overlays.push(obj)
@@ -453,8 +448,6 @@ $("div#bigone").removeClass("showBox")
         overlayIndex.value = counter
 
         mode.value = "editOverlay"
-
-        console.log(overlays.filter(obj => obj.ID !== overlayIndex.value))
     }
 
     function getOverlayIndex() {
@@ -477,7 +470,8 @@ $("div#bigone").removeClass("showBox")
     }
 
     function filteredOverlays() {
-        return overlays.filter(obj => obj.ID !== overlayIndex.value)
+        if (mode.value === "addOrSelectOverlay") return overlays;
+        return overlays.filter(obj => obj.ID !== "o" + overlayIndex.value)
     }
 
     function loadDocuments() {
@@ -506,6 +500,53 @@ $("div#bigone").removeClass("showBox")
         this.saveDocuments();
     }
 
+
+
+    function convertPixelsToHeightPercentage(str) {
+
+        let val = str.substr(0, str.length - 1);
+
+        return (convertToHeightPercentage(val))
+    }
+
+    function convertToHeightPercentage(val) {
+        var windowHeight = window.innerHeight;
+
+        //if (props.savedBaseHeight) windowHeight = savedBaseHeight;
+            return parseInt(val) / windowHeight * 100
+    }
+
+    function saveOverlay() {
+        let obj = overlays[overlayIndex.value]
+
+        console.log($("div#" + obj.ID).css("left" )) 
+        console.log($("div#" + obj.ID).css("top" ))
+
+        obj.positionX =  convertPixelsToHeightPercentage( $("div#" + obj.ID).css("left" ))
+        obj.positionY = convertPixelsToHeightPercentage($("div#" + obj.ID).css("top" ))
+        obj.textColor= $("div#" + obj.ID).css("color" )
+        obj.rotate =   $("div#" + obj.ID).css("rotate" )
+
+        console.dir(obj)
+    }
+
+    function doEditOverlay(int) {
+        overlayIndex.value = int;
+        mode.value = "editOverlay"
+    }
+
+    function getOverlayPositionX() {
+        const obj = overlays[overlayIndex.value]
+
+        return convertToHeightPercentage(getPosX() )
+    }
+
+    function getOverlayPositionY() {
+        const obj = overlays[overlayIndex.value]
+        
+        return convertToHeightPercentage(getPosY() )
+    }
+
     //*******************************************************************************//
     //
     //                    TEMPLATE
@@ -525,8 +566,10 @@ $("div#bigone").removeClass("showBox")
             <Overlay
                 :key="getOverlayIndex()"
                 :obj="overlays[getOverlayIndex()]"
-                :positionX="overlays[getOverlayIndex()].positionX" 
-                :positionY="overlays[getOverlayIndex()].positionY"
+                :positionX="getOverlayPositionX()" 
+                :positionY="getOverlayPositionY()" 
+                :savedX="overlays[getOverlayIndex()].positionX"
+                :savedY="overlays[getOverlayIndex()].positionY"
             />
     </div>
 
@@ -556,6 +599,9 @@ $("div#bigone").removeClass("showBox")
         <div v-if="isMode('addOrSelectOverlay')">
             <button @click="createNewOverlay()">+ OVERLAY</button>    
             <button @click="exitNewDocument()">EXIT</button>  
+            <div v-for="(obj, index) in filteredOverlays()">
+                <button @click="doEditOverlay(index)"> {{ obj.text }}</button>
+            </div>
         </div>
 
         <div v-if="isMode('editOverlay')" class="saveOrExitContainer">

@@ -13,8 +13,11 @@
         positionY: {
             type: Number
         },
-        ID: {
-            type: String
+        savedX: {
+            type: Number
+        },
+        savedY: {
+            type: Number
         }
     })
 
@@ -110,13 +113,29 @@ function changeContainerPosition() {
     //setOperation('changeContainerPosition')
 }
 
+let initialDraw = true
 
 function getStyleObject() {
-    console.log
+    var windowHeight = window.innerHeight;
+
+    if (props.savedBaseHeight) windowHeight = savedBaseHeight;
+
+    var posY, posX
+
+    if (initialDraw) {
+        posX = props.savedX
+        posY = props.savedY
+        initialDraw = false
+    }
+    else {
+        posX = props.positionX
+        posY = props.positionY       
+    }
     return {
-        left: props.positionX + "px",
-        top: props.positionY + "px",
-        fontSize: props.obj.fontSize
+        top: posY + "vh",
+        left: posX + "vh",
+        fontSize: props.obj.fontSize,
+        rotate: props.obj.rotate
     }
 }
 
@@ -133,7 +152,7 @@ function getEditButtonClass(_str) {
     }
 
     function getDivID() {
-        return props.ID
+        return props.obj.ID
     }
 
 </script>

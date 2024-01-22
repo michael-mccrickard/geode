@@ -13,16 +13,21 @@
             type: Number
         },
         ID: {
-            type: String
+            type: Number
         }
     })
 
 
     function getStyleObject() {
-        
+        var windowHeight = window.innerHeight;
+
+        if (props.savedBaseHeight) windowHeight = savedBaseHeight;
+
         return {
-            left: props.positionX + "px",
-            top: props.positionY+ "px"
+            top: (props.positionY) + "vh",
+            left: (props.positionX) + "vh",
+            fontSize: props.obj.fontSize,
+            rotate: props.obj.rotate
         }
     }
 
