@@ -26,7 +26,7 @@
         return {
             top: (props.positionY) + "vh",
             left: (props.positionX) + "vh",
-            fontSize: props.obj.fontSize,
+            fontSize: props.obj.fontSize + "vh",
             rotate: props.obj.rotate,
             color: props.obj.textColor
         }

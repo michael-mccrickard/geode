@@ -78,79 +78,7 @@ doc = { filename: filename.value }
         arrSource.push(obj);
     })
 
-   //*******************************************************************************//
-    //
-    //                    FONTS
-    //
-    //******************************************************************************* */
-
-    const defaultFontSize = 16
-    const arrFonts =  ["gasoek", "koulen", "lilita","molle","paytone","playball","staat", "alkatara", "squada"]
-    const arrFontNames =  ["Gasoek One", "Koulen", "Lilita One","Molle","Paytone One","Playball","Staatliches", "Alkatara", "Squada One"]
-    const fontIndex = ref(0)
-    const fontSizeChange = ref(0)
-    const fontSizeInc =  5//0.25
-    const fontSize = ref(defaultFontSize)  //not currently used
-
-    function getFontClass() { 
-        return "headline " + arrFonts[fontIndex.value]
-    }
-
-    function getFontName() { 
-        return arrFontNames[fontIndex.value]
-    }
-
-    function getFontSizeChangeValue() {
-        return fontSizeChange.value
-    }
-
-    function getFormattedFontSizeValue() {
-        return fontSize.value + "vh"
-    }
-
-    function calcFontSizeValue(ID) {
-
-        let windowHeight = window.innerHeight
-        if ( savedBaseHeight) windowHeight = savedBaseHeight
-        
-        let fontSizeInPixels = $("div#" + ID).css("font-size")
-
-        if (fontSizeInPixels) {
-
-            fontSizeInPixels = fontSizeInPixels.slice(0, -2);
-
-            fontSize.value = fontSizeInPixels / windowHeight * 100
-
-            return fontSize.value
-        }
-        return null
-
-    }
-
-    function changeFontIndex(_val) {
-        setMode("editOverlay")
-        setOperation("changeFontIndex")
-
-        var tmp = fontIndex.value += _val
-
-        if (tmp === arrFonts.length - 1) {
-            fontIndex.value = 0;
-            return;
-        }
-        if (tmp === -1) {
-            fontIndex.value = arrFonts.length - 1;
-            return;
-        }
-
-        fontIndex.value = tmp;
-    }
-
-    function changeFontSize(_val) {
-        setMode("editOverlay")
-        setOperation("changeFontSize")
-        fontSizeChange.value += _val;
-    }
-
+   
 
 
     //*******************************************************************************//
@@ -410,7 +338,7 @@ const obj = {
             ID: "o" + counter,
             positionX: 0,
             positionY: 0,
-            fontSize: "64px",
+            fontSize: 10,  //vh units
             rotate: "0deg",
             textColor: "white"
         }
@@ -499,6 +427,8 @@ const obj = {
         obj.textColor= $("div#" + obj.ID).css("color" )
         obj.rotate =   $("div#" + obj.ID).css("rotate" )
 
+        obj.fontSize =  convertPixelsToHeightPercentage($("div#" + obj.ID).css("font-size" ))
+
         console.dir(obj)
     }
 
@@ -543,6 +473,7 @@ const obj = {
                 :savedX="overlays[getOverlayIndex()].positionX"
                 :savedY="overlays[getOverlayIndex()].positionY"
                 :savedColor="overlays[getOverlayIndex()].textColor"
+                :savedFontSize="overlays[getOverlayIndex()].fontSize"
             />
     </div>
 

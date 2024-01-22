@@ -21,6 +21,9 @@
         },
         savedColor: {
             type: String
+        },
+        savedFontSize: {
+            type: Number
         }
     })
 
@@ -125,6 +128,74 @@
         
     }
 
+//*******************************************************************************//
+    //
+    //                    FONTS
+    //
+    //******************************************************************************* */
+
+    const defaultFontSize = 16
+    const arrFonts =  ["gasoek", "koulen", "lilita","molle","paytone","playball","staat", "alkatara", "squada"]
+    const arrFontNames =  ["Gasoek One", "Koulen", "Lilita One","Molle","Paytone One","Playball","Staatliches", "Alkatara", "Squada One"]
+    const fontIndex = ref(0)
+    const fontSizeChange = ref(0)
+    const fontSizeInc =  0.25
+    const fontSize = ref(defaultFontSize)  //not currently used
+
+    function getFontClass() { 
+        return "headline " + arrFonts[fontIndex.value]
+    }
+
+    function getFontName() { 
+        return arrFontNames[fontIndex.value]
+    }
+
+    function getFontSizeChangeValue() {
+        return fontSizeChange.value
+    }
+
+    function getFormattedFontSizeValue() {
+        return fontSize.value + "vh"
+    }
+
+    function calcThisFontSizeValueFromPixels(val) {
+
+        let windowHeight = window.innerHeight
+
+        let fontSizeInPixels = val.slice(0, -2);
+
+        if (fontSizeInPixels) {
+            return fontSizeInPixels / windowHeight * 100
+        }
+        return null
+
+    }
+
+    function changeFontIndex(_val) {
+        setMode("editOverlay")
+        setOperation("changeFontIndex")
+
+        var tmp = fontIndex.value += _val
+
+        if (tmp === arrFonts.length - 1) {
+            fontIndex.value = 0;
+            return;
+        }
+        if (tmp === -1) {
+            fontIndex.value = arrFonts.length - 1;
+            return;
+        }
+
+        fontIndex.value = tmp;
+    }
+
+    function changeFontSize(_val) {
+        setMode("editOverlay")
+        setOperation("changeFontSize")
+        fontSize.value += _val;
+    }
+
+
     //*******************************************************************************//
     //
     //                    COLORS
@@ -196,6 +267,7 @@
             posX.value = props.savedX
             posY.value = props.savedY
             textColor = props.savedColor
+            fontSize.value = props.savedFontSize
             initialDraw = false
         }
         else {
@@ -228,7 +300,7 @@
         return {
             top: posY.value + "vh",
             left: posX.value + "vh",
-            fontSize: props.obj.fontSize,
+            fontSize: fontSize.value + "vh",
             rotate: props.obj.rotate,
             color: textColor
         }
