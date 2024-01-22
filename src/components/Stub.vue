@@ -27,7 +27,8 @@
             top: (props.positionY) + "vh",
             left: (props.positionX) + "vh",
             fontSize: props.obj.fontSize,
-            rotate: props.obj.rotate
+            rotate: props.obj.rotate,
+            color: props.obj.textColor
         }
     }
 

@@ -151,36 +151,7 @@ doc = { filename: filename.value }
         fontSizeChange.value += _val;
     }
 
-    //*******************************************************************************//
-    //
-    //                    COLORS
-    //
-    //******************************************************************************* */
 
-    const arrColors =  ["white","red", "green", "blue","yellow","orange","purple","brown", "pink", "violet","cyan","lightgray","gray","darkgray"]
-    const colorIndex = ref(0)
-
-    function changeColorIndex(_val) {
-        setMode("editOverlay")
-        setOperation("changeColorIndex")
-
-        var tmp = colorIndex.value += _val
-
-        if (tmp === arrColors.length - 1) {
-            colorIndex.value = 0;
-            return;
-        }
-        if (tmp === -1) {
-            colorIndex.value = arrColors.length - 1;
-            return;
-        }
-
-        colorIndex.value = tmp;
-    }
-
-    function getColor() {
-        return arrColors[colorIndex.value];
-    }
 
     //*******************************************************************************//
     //
@@ -440,7 +411,8 @@ const obj = {
             positionX: 0,
             positionY: 0,
             fontSize: "64px",
-            rotate: "0deg"
+            rotate: "0deg",
+            textColor: "white"
         }
         
         overlays.push(obj)
@@ -570,6 +542,7 @@ const obj = {
                 :positionY="getOverlayPositionY()" 
                 :savedX="overlays[getOverlayIndex()].positionX"
                 :savedY="overlays[getOverlayIndex()].positionY"
+                :savedColor="overlays[getOverlayIndex()].textColor"
             />
     </div>
 
@@ -580,6 +553,7 @@ const obj = {
                 :obj="obj"
                 :positionX="obj.positionX" 
                 :positionY="obj.positionY"
+                :textColor ="obj.textColor"
             />
     </div>
 

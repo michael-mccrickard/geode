@@ -18,124 +18,194 @@
         },
         savedY: {
             type: Number
+        },
+        savedColor: {
+            type: String
         }
     })
 
-    //Reactive vars to track changes to overlay
+    //*******************************************************************************//
+    //
+    //                    ARROW KEYS
+    //
+    //********************************************************************************/
 
-    const mode = ref("editOverlay")
+    //The arrow keys are used to nudge the headline, adjust font and fontsize, cycle through text colors and rotate text 
 
-//*******************************************************************************//
-//
-//                    ARROW KEYS
-//
-//********************************************************************************/
+    onMounted(() => {
+        document.addEventListener('keydown', handleArrowKey)
 
-//The arrow keys are used to nudge the headline, adjust font and fontsize, cycle through text colors and rotate text 
+    })
 
-onMounted(() => {
-    document.addEventListener('keydown', handleArrowKey)
+    onUnmounted(() => {
+        document.removeEventListener('keydown', handleArrowKey)
+    })
 
-})
+    onUpdated(() => {
 
-onUnmounted(() => {
-    document.removeEventListener('keydown', handleArrowKey)
-})
+    })
 
-onUpdated(() => {
+    function handleArrowKey(event) {
+        const key = event.key
 
-})
+        var amount = 1;
 
-const operation = ref("")
+        if (key.startsWith('Arrow')) {
 
-function handleArrowKey(event) {
-    const key = event.key
+            if (operation.value == 'changeContainerPosition') {
 
-    var amount = 1;
-
-    if (key.startsWith('Arrow')) {
-
-        if (operation.value == 'changeContainerPosition') {
-
-            if (event.shiftKey) {
-                amount = 10;
+                if (event.shiftKey) {
+                    amount = 10;
+                }
+                else {
+                    amount = 5;
+                }
+                if (key == "ArrowUp") posY.value -= amount;
+                if (key == "ArrowDown") posY.value += amount;
+                if (key == "ArrowRight") posX.value += amount;
+                if (key == "ArrowLeft") posX.value -= amount;   
+                return;  
             }
-            else {
-                amount = 5;
+
+            if (operation.value == 'changeFontIndex') {
+                if (key == "ArrowRight" || key == "ArrowUp") changeFontIndex(1);
+                if (key == "ArrowLeft" || key == "ArrowDown")  changeFontIndex(-1); 
             }
-            if (key == "ArrowUp") posY.value -= amount;
-            if (key == "ArrowDown") posY.value += amount;
-            if (key == "ArrowRight") posX.value += amount;
-            if (key == "ArrowLeft") posX.value -= amount;   
-            return;  
-        }
+            if (operation.value == 'changeFontSize') {
+                if (key == "ArrowRight" || key == "ArrowUp") changeFontSize(fontSizeInc);
+                if (key == "ArrowLeft" || key == "ArrowDown") changeFontSize(fontSizeInc * -1);
+            }
+            if (operation.value == 'changeContainerSize') {
+                if (key == "ArrowRight" || key == "ArrowUp") changeContainerSize(containerWidthInc);
+                if (key == "ArrowLeft" || key == "ArrowDown") changeContainerSize(containerWidthInc * -1);
+            }
 
-        if (operation.value == 'changeFontIndex') {
-            if (key == "ArrowRight" || key == "ArrowUp") changeFontIndex(1);
-            if (key == "ArrowLeft" || key == "ArrowDown")  changeFontIndex(-1); 
-        }
-        if (operation.value == 'changeFontSize') {
-            if (key == "ArrowRight" || key == "ArrowUp") changeFontSize(fontSizeInc);
-            if (key == "ArrowLeft" || key == "ArrowDown") changeFontSize(fontSizeInc * -1);
-        }
-        if (operation.value == 'changeContainerSize') {
-            if (key == "ArrowRight" || key == "ArrowUp") changeContainerSize(containerWidthInc);
-            if (key == "ArrowLeft" || key == "ArrowDown") changeContainerSize(containerWidthInc * -1);
-        }
+            if (operation.value == 'changeColorIndex') {
+                if (key == "ArrowRight" || key == "ArrowUp") changeColorIndex(1);
+                if (key == "ArrowLeft" || key == "ArrowDown") changeColorIndex(-1);
+            }
 
-        if (operation.value == 'changeColorIndex') {
-            if (key == "ArrowRight" || key == "ArrowUp") changeColorIndex(1);
-            if (key == "ArrowLeft" || key == "ArrowDown") changeColorIndex(-1);
-        }
+            if (operation.value == 'changeContainerRotation') {
+                if (key == "ArrowRight" || key == "ArrowUp") changeContainerRotation(1);
+                if (key == "ArrowLeft" || key == "ArrowDown") changeContainerRotation(-1);
+            }
+            if (operation.value == 'changeContent') {
+                if (key == "ArrowRight" || key == "ArrowUp") changeContent(1);
+            }
+            if (operation.value == 'playback') {
+                if (key == "ArrowRight" || key == "ArrowUp") loadData(1);
+            }
 
-        if (operation.value == 'changeContainerRotation') {
-            if (key == "ArrowRight" || key == "ArrowUp") changeContainerRotation(1);
-            if (key == "ArrowLeft" || key == "ArrowDown") changeContainerRotation(-1);
         }
-        if (operation.value == 'changeContent') {
-            if (key == "ArrowRight" || key == "ArrowUp") changeContent(1);
-        }
-        if (operation.value == 'playback') {
-            if (key == "ArrowRight" || key == "ArrowUp") loadData(1);
-        }
-
     }
-}
 
-//*******************************************************************************//
-//
-//                    MOVE TEXT (ALSO SETS UP ARROW KEY MOVES)
-//
-//********************************************************************************/
+    //*******************************************************************************//
+    //
+    //                    MOVE TEXT (ALSO SETS UP ARROW KEY MOVES)
+    //
+    //********************************************************************************/
 
-function changeContainerPosition() {
-    //setMode("editContainer")
-    //setOperation('changeContainerPosition')
-}
+    function changeContainerPosition() {
+        setMode("editContainer")
+        setOperation('changeContainerPosition')
+    }
 
+    //*******************************************************************************//
+    //
+    //                    COLORS
+    //
+    //******************************************************************************* */
+
+    const arrColors =  ["white","red", "green", "blue","yellow","orange","purple","brown", "pink", "violet","cyan","lightgray","gray","darkgray"]
+    const colorIndex = ref(0)
+
+    function changeColorIndex(_val) {
+        setMode("editOverlay")
+        setOperation("changeColorIndex")
+
+        var tmp = colorIndex.value += _val
+
+        if (tmp === arrColors.length - 1) {
+            colorIndex.value = 0;
+            return;
+        }
+        if (tmp === -1) {
+            colorIndex.value = arrColors.length - 1;
+            return;
+        }
+
+        colorIndex.value = tmp;
+    }
+
+    function getColor() {
+        return arrColors[colorIndex.value];
+    }
+
+    //*******************************************************************************//
+    //
+    //                    MODE AND OPERATIONS
+    //
+    //******************************************************************************* */
+
+    const mode = ref("")
+
+    function setMode(str) {
+        mode.value = str
+    }
+
+    //Edit operations: changeContent, changeFontSize, changeFontColor, changeContainerSize, changeContainerPosition, changeContainerRotation
+    const operation = ref("")
+
+    function setOperation(_str) {
+        operation.value = _str;
+    }
+
+
+    //*******************************************************************************//
+    //
+    //                    STYLING
+    //
+    //******************************************************************************* */
 let initialDraw = true
+    var lastX, lastY
 
 function getStyleObject() {
     var windowHeight = window.innerHeight;
 
     if (props.savedBaseHeight) windowHeight = savedBaseHeight;
 
-    var posY, posX
+    var posY, posX, textColor
 
     if (initialDraw) {
+console.log("initial draw")
         posX = props.savedX
         posY = props.savedY
+        textColor = props.savedColor
         initialDraw = false
     }
     else {
-        posX = props.positionX
-        posY = props.positionY       
+console.log("not initial draw")
+        textColor = getColor()  
+
+        if (operation.value === 'changeContainerPosition') {
+            posX = props.positionX
+            posY = props.positionY  
+        }
+        else {
+            posX = lastX
+            posY = lastY         
+        }
+        
+        lastX = posX
+        lastY = posY
     }
+
     return {
         top: posY + "vh",
         left: posX + "vh",
         fontSize: props.obj.fontSize,
-        rotate: props.obj.rotate
+        rotate: props.obj.rotate,
+        color: textColor
     }
 }
 
