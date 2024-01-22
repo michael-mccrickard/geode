@@ -52,7 +52,7 @@
 
         if (key.startsWith('Arrow')) {
 
-            if (operation.value == 'changeContainerPosition') {
+            if (operation.value == 'changeContainerPositionWithArrowKeys') {
 
                 if (event.shiftKey) {
                     amount = 10;
@@ -105,9 +105,24 @@
     //
     //********************************************************************************/
 
-    function changeContainerPosition() {
+    const posX = ref(0)
+    const posY = ref(0)
+
+//make this toggle the button and the state
+    function changeContainerPosition(str) {
+        
+        if (str === 'mouse') {
+            operationChangeToMove = true;  //lets us trap the initial prop change which jerks 
+                                    //the container to wherever the mouse was last clicked
+             setOperation('changeContainerPositionWithMouse')
+        }
+
+        if (str === 'keys') {
+             setOperation('changeContainerPositionWithArrowKeys')
+        }
+
         setMode("editContainer")
-        setOperation('changeContainerPosition')
+        
     }
 
     //*******************************************************************************//
@@ -153,7 +168,7 @@
         mode.value = str
     }
 
-    //Edit operations: changeContent, changeFontSize, changeFontColor, changeContainerSize, changeContainerPosition, changeContainerRotation
+    //Edit operations: changeContent, changeFontSize, changeFontColor, changeContainerSize, changeContainerPositionWithMouse, changeContainerPositionWithArrowKeys, changeContainerRotation
     const operation = ref("")
 
     function setOperation(_str) {
@@ -166,50 +181,60 @@
     //                    STYLING
     //
     //******************************************************************************* */
-let initialDraw = true
+    let initialDraw = true
     var lastX, lastY
+    let operationChangeToMove = false
 
-function getStyleObject() {
-    var windowHeight = window.innerHeight;
+    function getStyleObject() {
+        var windowHeight = window.innerHeight;
 
-    if (props.savedBaseHeight) windowHeight = savedBaseHeight;
+        if (props.savedBaseHeight) windowHeight = savedBaseHeight;
 
-    var posY, posX, textColor
+        var textColor
 
-    if (initialDraw) {
-console.log("initial draw")
-        posX = props.savedX
-        posY = props.savedY
-        textColor = props.savedColor
-        initialDraw = false
-    }
-    else {
-console.log("not initial draw")
-        textColor = getColor()  
-
-        if (operation.value === 'changeContainerPosition') {
-            posX = props.positionX
-            posY = props.positionY  
+        if (initialDraw) {
+            posX.value = props.savedX
+            posY.value = props.savedY
+            textColor = props.savedColor
+            initialDraw = false
         }
         else {
-            posX = lastX
-            posY = lastY         
+
+            textColor = getColor()  
+
+            if (operation.value === 'changeContainerPositionWithMouse') {
+
+                if (!operationChangeToMove) {  //trap the first call which tends to jerk the container unexpectedly
+                                                //to the last place the mouse was clicked
+                    posX.value = props.positionX
+                    posY.value = props.positionY  
+                }
+                else {
+                    operationChangeToMove = false
+                }
+
+            }
+            else {
+                if (operation.value !== 'changeContainerPositionWithArrowKeys') {
+                    posX.value = lastX
+                    posY.value = lastY  
+                }       
+            }
         }
-        
-        lastX = posX
-        lastY = posY
+
+        lastX = posX.value
+        lastY = posY.value
+
+        return {
+            top: posY.value + "vh",
+            left: posX.value + "vh",
+            fontSize: props.obj.fontSize,
+            rotate: props.obj.rotate,
+            color: textColor
+        }
     }
 
-    return {
-        top: posY + "vh",
-        left: posX + "vh",
-        fontSize: props.obj.fontSize,
-        rotate: props.obj.rotate,
-        color: textColor
-    }
-}
-
-function getEditButtonClass(_str) {
+    function getEditButtonClass(_str) {
         var _class = "";
         _str === operation.value ? _class = "editButton selected" : _class = "editButton unselected"
         return _class
@@ -245,7 +270,8 @@ function getEditButtonClass(_str) {
             <hr>
 
             <span id="btnContainer" :class="getHeaderClass('editContainer')">CONTAINER</span>
-            <button @click="changeContainerPosition()" :class="getEditButtonClass('changeContainerPosition')">MOVE</button>
+            <button @click="changeContainerPosition('mouse')" :class="getEditButtonClass('changeContainerPositionWithMouse')">MOVE (Mouse)</button>
+            <button @click="changeContainerPosition('keys')" :class="getEditButtonClass('changeContainerPositionWithArrowKeys')">MOVE (Arrow keys)</button>
             <button @click="changeContainerRotation(0)" :class="getEditButtonClass('changeContainerRotation')">ROTATE</button> 
             <button id="btnChangeContainerSize" @click="changeContainerSize(0)" :class="getEditButtonClass('changeContainerSize')"> SIZE</button>
 

@@ -64,11 +64,11 @@ html, body {
   padding-left: 1vw; 
   height: 100vh;
   z-index: 0;
-  background-color: rgb(70, 0, 220); /* Replace with your desired background color */   
+  background-color: rgb(220, 0, 0); /* Replace with your desired background color */   
 }
 
 .editmode-div {
-    background-color: rgb(70, 0, 220); /* Replace with your desired background color */   
+    background-color: rgb(220, 0, 0); /* Replace with your desired background color */   
 }
 
 .saveOrExitContainer {
