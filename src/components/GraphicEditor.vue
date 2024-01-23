@@ -3,29 +3,12 @@
 <script setup>
     import Overlay from "./Overlay.vue";
     import Stub from "./Stub.vue";
-    import { useMouse } from '../mouse.js'
+
     import { ref, computed, onMounted, onUnmounted, onUpdated, reactive, toRefs } from 'vue'
     import $ from 'jquery'
 
 
-    //clicking the mouse on the image moves the headline
-    const { x, y } = useMouse()
 
-    const posX = ref(0)
-    const posY = ref(0)
-
-    function clickEventOnImg() {
-        posX.value = x.value;
-        posY.value = y.value;
-    }
-
-    function getPosX() {
-        return posX.value
-    }
-
-    function getPosY() {
-        return posY.value
-    }
 
     //*******************************************************************************//
     //
@@ -35,12 +18,14 @@
 
     const filename = ref("")
 
+    function getFilename() {
+        return filename.value
+    }
+
     let doc = {}
 
  //Clicking the NEW button initializes these variables and puts us in edit mode
     function createNewDocument(_txt) {
-        posX.value = 0
-        posY.value = 0
         savedBaseHeight = 0;
 
         overlays = []
@@ -315,12 +300,12 @@ const obj = {
         let obj = {
             text: "Your text here " + counter,
             ID: "o" + counter,
-            positionX: 0,
-            positionY: 0,
+            posX: 0,
+            posY: 0,
             fontSize: 10,  //vh units
             fontName: "gasoek",
             rotate: 0,
-            textColor: "white"
+            color: "white"
         }
         
         overlays.push(obj)
@@ -340,7 +325,7 @@ const obj = {
     }
 
     function fileIsLoaded() {
-        if (filename.value.length) {
+        if (filename.value.length & mode.value !== "editOverlay") {
             return true
         }
         else {
@@ -416,8 +401,8 @@ const obj = {
 
         const ele = "div#" + obj.ID
 
-        obj.positionX =  convertPixelsToHeightPercentage( $(ele).css("left" ))
-        obj.positionY = convertPixelsToHeightPercentage($(ele).css("top" ))
+        obj.posX =  convertPixelsToHeightPercentage( $(ele).css("left" ))
+        obj.posY = convertPixelsToHeightPercentage($(ele).css("top" ))
         obj.color = $(ele).css("color" )
         obj.rotate =  parseFloat(getRotateValue(ele))
 
@@ -454,15 +439,16 @@ const obj = {
 
 
 <template>
-
+<div>
     <div v-if = "fileIsLoaded()" class="container">
-        <img :src= "filename" @click="clickEventOnImg"/>
+        <img :src= "getFilename()">
     </div>
 
      <div v-if = "isMode('editOverlay')" id="editOverlaySpace">
             <Overlay
                 :key="getOverlayIndex()"
                 :obj="overlays[getOverlayIndex()]"
+                :filename="getFilename()"
             />
     </div>
 
@@ -506,6 +492,7 @@ const obj = {
         </div>
         
     </div>
+</div>
 </template>
 
 
@@ -522,12 +509,3 @@ const obj = {
                     :containerWidth="getContainerWidth()"
                     :operation="getOperation()
                     :updateKey = "getUpdateKey()" -->
-
-<!--                     :positionX="getOverlayPositionX()" 
-                    :positionY="getOverlayPositionY()" 
-                    :savedX="overlays[getOverlayIndex()].positionX"
-                    :savedY="overlays[getOverlayIndex()].positionY"
-                    :savedColor="overlays[getOverlayIndex()].textColor"
-                    :savedFontSize="overlays[getOverlayIndex()].fontSize"
-                    :savedFontName="overlays[getOverlayIndex()].fontName"
-                    :savedRotate="overlays[getOverlayIndex()].rotate" -->

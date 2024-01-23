@@ -15,8 +15,8 @@
         if (props.savedBaseHeight) windowHeight = savedBaseHeight;
 
         return {
-            top: props.obj.positionY + "vh",
-            left: props.obj.positionX + "vh",
+            top: props.obj.posY + "vh",
+            left: props.obj.posX + "vh",
             fontSize: props.obj.fontSize + "vh",
             color: props.obj.color,
             rotate: props.obj.rotate + "deg"

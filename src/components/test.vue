@@ -24,6 +24,34 @@
             }
             this.saveDocuments();
         }
+
+
+/*         if (operation.value === 'changeContainerPositionWithMouse') {
+
+if (!operationChangeToMove) {  //trap the first call which tends to jerk the container unexpectedly
+                                //to the last place the mouse was clicked
+console.log("updating positionx and y to saved values")
+    positionX = props.obj.posX
+    positionY = props.obj.posY
+}
+else {
+    operationChangeToMove = false
+
+console.log("updating positionx and y to converted mouse values")
+    positionX = convertToHeightPercentage(posX.value)
+    positionY = convertToHeightPercentage(posY.value)      
+console.log(positionX)
+console.log(positionY)
+}
+
+}
+else {
+if (operation.value !== 'changeContainerPositionWithArrowKeys') {
+    positionX = lastX
+    positionY = lastY  
+}       
+}
+} */
 </script>
 
 <template>

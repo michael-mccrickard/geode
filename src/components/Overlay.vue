@@ -1,37 +1,37 @@
 <script setup>
     import { ref, computed, onMounted, onUnmounted, onUpdated, reactive, toRefs } from 'vue'
     import $ from 'jquery'
+    import { useMouse } from '../mouse.js'
 
     const props = defineProps({
         obj: {
             type: Object,
             required: true
         },
-        positionX: {
-            type: Number
-        },
-        positionY: {
-            type: Number
-        },
-        savedX: {
-            type: Number
-        },
-        savedY: {
-            type: Number
-        },
-        savedColor: {
+        filename: {
             type: String
-        },
-        savedFontSize: {
-            type: Number
-        },
-        savedFontName: {
-            type: String
-        },
-        savedRotate: {
-            type: Number
         }
     })
+
+
+    //clicking the mouse on the image moves the headline
+    const { x, y } = useMouse()
+
+    const posX = ref(0)
+    const posY = ref(0)
+
+    function clickEventOnImg() {
+        posX.value = x.value;
+        posY.value = y.value;
+    }
+
+    function getPosX() {
+        return convertToHeightPercentage(posX.value)
+    }
+
+    function getPosY() {
+        return convertToHeightPercentage(posY.value)
+    }
 
     //*******************************************************************************//
     //
@@ -114,27 +114,14 @@
     //
     //********************************************************************************/
 
-    const posX = ref(0)
-    const posY = ref(0)
+    //const posX = ref(0)
+    //const posY = ref(0)
 
 //make this toggle the button and the state
-    function changeContainerPosition(str) {
-        
-        if (str === 'mouse') {
-            operationChangeToMove = true;  //lets us trap the initial prop change which jerks 
-                                    //the container to wherever the mouse was last clicked
-             setOperation('changeContainerPositionWithMouse')
-        }
-
-        if (str === 'keys') {
-             setOperation('changeContainerPositionWithArrowKeys')
-        }
-
+    function changeContainerPosition() {
+        setOperation('changeContainerPosition')
         setMode("editContainer")
-        
     }
-
-
 
     //*******************************************************************************//
     //
@@ -204,7 +191,7 @@
 
         var tmp = fontIndex.value += _val
 
-        if (tmp === arrFonts.length - 1) {
+        if (tmp === arrFonts.length) {
             fontIndex.value = 0;
             return;
         }
@@ -238,7 +225,7 @@
 
         var tmp = colorIndex.value += _val
 
-        if (tmp === arrColors.length - 1) {
+        if (tmp === arrColors.length) {
             colorIndex.value = 0;
             return;
         }
@@ -256,9 +243,12 @@
 
     function syncColorIndex() {
 
+        //Need to fix this, incoming value on prop.obj is an rgb color value
+        //not synced properly here and this is causing unwanted color changes in getStyleObject()
+
         const index = arrColors.indexOf(props.obj.color)
 
-        if (index !== undefined) colorIndex.value = index
+        if (index !== -1) colorIndex.value = index
 
     }
 
@@ -274,7 +264,7 @@
         mode.value = str
     }
 
-    //Edit operations: changeContent, changeFontSize, changeFontColor, changeContainerSize, changeContainerPositionWithMouse, changeContainerPositionWithArrowKeys, changeContainerRotation
+    //Edit operations: changeContent, changeFontSize, changeFontColor, changeContainerSize, changeContainerPosition, changeContainerRotation
     const operation = ref("")
 
     function setOperation(_str) {
@@ -303,16 +293,23 @@
     function getStyleObject() {
         var windowHeight = window.innerHeight;
 
+        var positionX, positionY
+
         if (props.savedBaseHeight) windowHeight = savedBaseHeight;
 
         var color
 
         if (initialDraw) {
-            posX.value = props.obj.positionX
-            posY.value = props.obj.positionY
+            //these are stored as vh units and getPosX() and getPosY() do the conversion automatically
+            //so we have to unconvert these here
+            posX.value = convertHeightPercentageToPixels(props.obj.posX)
+            posY.value = convertHeightPercentageToPixels(props.obj.posY)
             color = props.obj.color
             syncColorIndex()
+            
             fontSize.value = props.obj.fontSize
+            //font face gets synced in first call to getClassList()
+
             rotate.value = props.obj.rotate
             initialDraw = false
         }
@@ -320,36 +317,27 @@
 
             color = getColor()  
 
-            if (operation.value === 'changeContainerPositionWithMouse') {
-
-                if (!operationChangeToMove) {  //trap the first call which tends to jerk the container unexpectedly
-                                                //to the last place the mouse was clicked
-                    posX.value = props.obj.positionX
-                    posY.value = props.obj.positionY
-                }
-                else {
-                    operationChangeToMove = false
-                }
-
-            }
-            else {
-                if (operation.value !== 'changeContainerPositionWithArrowKeys') {
-                    posX.value = lastX
-                    posY.value = lastY  
-                }       
-            }
+            lastX = getPosX()
+            lastY = getPosY()
         }
 
-        lastX = posX.value
-        lastY = posY.value
-
         return {
-            top: posY.value + "vh",
-            left: posX.value + "vh",
+            top: getPosY() + "vh",
+            left: getPosX() + "vh",
             fontSize: fontSize.value + "vh",
             rotate: rotate.value + "deg",
             color: color
         }
+    }
+
+    function convertHeightPercentageToPixels(val) {
+        var windowHeight = window.innerHeight;
+         return (parseFloat(val) / 100) * windowHeight
+    }
+
+    function convertToHeightPercentage(val) {
+        var windowHeight = window.innerHeight;
+         return parseInt(val) / windowHeight * 100
     }
 
     function getEditButtonClass(_str) {
@@ -372,7 +360,7 @@
         if (initialFontDraw) {
             initialFontDraw = false
 
-            const index = arrFontNames.indexOf(props.obj.fontName)
+            const index = arrFonts.indexOf(props.obj.fontName)
 
             if (index !== -1) fontIndex.value = index
 
@@ -381,13 +369,15 @@
         return arrFonts[fontIndex.value] + " headline selectedOverlay"
     }
 
-
 </script>
 
 
 <template>
     <div>
-        <div :id="getDivID()" :class="getClassList()" :style="getStyleObject()">
+        <div class="container">
+            <img :src= "props.filename" @click="clickEventOnImg"/>
+        </div>
+        <div :id="getDivID()" :class="getClassList()" :style="getStyleObject()" data-colorName="getColorName()">
             <span>{{props.obj.text}} </span>
         </div>
 
@@ -402,8 +392,7 @@
             <hr>
 
             <span id="btnContainer" :class="getHeaderClass('editContainer')">CONTAINER</span>
-            <button @click="changeContainerPosition('mouse')" :class="getEditButtonClass('changeContainerPositionWithMouse')">MOVE (Mouse)</button>
-            <button @click="changeContainerPosition('keys')" :class="getEditButtonClass('changeContainerPositionWithArrowKeys')">MOVE (Arrow keys)</button>
+            <button @click="changeContainerPosition()" :class="getEditButtonClass('changeContainerPosition')">MOVE (Arrow keys)</button>
             <button @click="changeContainerRotate(0)" :class="getEditButtonClass('changeContainerRotate')">ROTATE</button> 
             <button id="btnChangeContainerSize" @click="changeContainerSize(0)" :class="getEditButtonClass('changeContainerSize')"> SIZE</button>
 
