@@ -26,7 +26,6 @@
 
  //Clicking the NEW button initializes these variables and puts us in edit mode
     function createNewDocument(_txt) {
-        savedBaseHeight = 0;
 
         overlays = []
         overlayIndex.value = 0
@@ -305,7 +304,7 @@ const obj = {
             fontSize: 10,  //vh units
             fontName: "gasoek",
             rotate: 0,
-            color: "white"
+            color: "rgb(255, 255, 255)"
         }
         
         overlays.push(obj)

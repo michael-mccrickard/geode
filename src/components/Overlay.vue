@@ -216,7 +216,25 @@
     //
     //******************************************************************************* */
 
-    const arrColors =  ["white","red", "green", "blue","yellow","orange","purple","brown", "pink", "violet","cyan","lightgray","gray","darkgray"]
+   //const arrColors =  ["white","red", "green", "blue","yellow","orange","purple","brown", "pink", "violet","cyan","lightgray","gray","darkgray"]
+
+    const arrColors = [
+    "rgb(255, 255, 255)",
+    "rgb(255, 0, 0)",
+    "rgb(0, 128, 0)",
+    "rgb(0, 0, 255)",
+    "rgb(255, 255, 0)",
+    "rgb(255, 165, 0)",
+    "rgb(128, 0, 128)",
+    "rgb(165, 42, 42)",
+    "rgb(255, 192, 203)",
+    "rgb(238, 130, 238)",
+    "rgb(0, 255, 255)",
+    "rgb(211, 211, 211)",
+    "rgb(128, 128, 128)",
+    "rgb(169, 169, 169)"
+]
+
     const colorIndex = ref(0)
 
     function changeColorIndex(_val) {
@@ -247,7 +265,7 @@
         //not synced properly here and this is causing unwanted color changes in getStyleObject()
 
         const index = arrColors.indexOf(props.obj.color)
-
+console.log("color index synced to " + index)
         if (index !== -1) colorIndex.value = index
 
     }
@@ -388,7 +406,7 @@
             <button @click="changeFontIndex(1)" :class="getEditButtonClass('changeFontIndex')">CHANGE FONT</button>
             <button @click="changeColorIndex(1)" :class="getEditButtonClass('changeColorIndex')">FONT COLOR</button>
             <button id="btnChangeFontSize" @click="changeFontSize(0)" :class="getEditButtonClass('changeFontSize')">FONT SIZE</button>
-
+            <button @click="makeList()">TEST</button>
             <hr>
 
             <span id="btnContainer" :class="getHeaderClass('editContainer')">CONTAINER</span>

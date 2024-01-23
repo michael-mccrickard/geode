@@ -26,6 +26,36 @@
         }
 
 
+var clist = []
+
+var icounter = -1
+
+    function makeList() {
+
+        icounter++
+
+        if (icounter == arrColors.length) {
+            console.log(clist)
+            return;
+        }
+
+        $("div#" + props.obj.ID).css("color", arrColors[icounter])
+
+        setTimeout(getRGBandRestart, 500)
+    }
+
+    function getRGBandRestart() {
+        console.log("getRGBandRestart")
+
+        console.log($("div#" + props.obj.ID).css("color" ))
+
+        clist.push($("div#" + props.obj.ID).css("color" ))
+
+        makeList()
+
+    }
+
+
 /*         if (operation.value === 'changeContainerPositionWithMouse') {
 
 if (!operationChangeToMove) {  //trap the first call which tends to jerk the container unexpectedly
