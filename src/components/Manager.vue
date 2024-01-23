@@ -91,21 +91,6 @@ doc = { filename: filename.value }
         return obj;
     }
 
-/*    
-
-        var windowHeight = window.innerHeight;
-
-        if (savedBaseHeight) windowHeight = savedBaseHeight;
-
-const obj = {
-            color: getColor(),
-            rotate: getRotation(),
-            top: (posY.value / windowHeight * 100) + "%",
-            left: (posX.value / windowHeight * 100) + "%",
-            fontSize: fontSize.value + "vh",
-            fontSizeChange: fontSizeChange.value,
-            width: containerWidth.value + "%"          
-        } */
 
     //*******************************************************************************//
     //
@@ -461,18 +446,3 @@ const obj = {
     </div>
 </div>
 </template>
-
-
-<!-- :textVal="textValue" 
-                    :fontclass="getFontClass()" 
-                    :fontName="getFontName()"
-                    :fontSize="getFormattedFontSizeValue()"
-                    :fontSizeChange = "getFontSizeChangeValue()"
-                    :positionX="getPosX()" 
-                    :positionY="getPosY()"
-                    :textColor="getColor()"
-                    :rotation="getRotation()" 
-                    :savedBasedHeight="savedBaseHeight"
-                    :containerWidth="getContainerWidth()"
-                    :operation="getOperation()
-                    :updateKey = "getUpdateKey()" -->

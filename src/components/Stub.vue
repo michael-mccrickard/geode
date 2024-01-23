@@ -8,6 +8,10 @@
         }
     })
 
+    function convertHeightPercentageToPixels(val) {
+        var windowHeight = window.innerHeight;
+         return (parseFloat(val) / 100) * windowHeight
+    }
 
     function getStyleObject() {
         var windowHeight = window.innerHeight;
@@ -18,7 +22,7 @@
             fontSize: props.obj.fontSize + "vh",
             color: props.obj.color,
             rotate: props.obj.rotate + "deg",
-            width: (props.obj.width /100) * windowHeight + "px"
+            width:  convertHeightPercentageToPixels(props.obj.width) + "px"
         }
     }
 
