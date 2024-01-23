@@ -78,27 +78,6 @@ doc = { filename: filename.value }
         arrSource.push(obj);
     })
 
-   
-
-
-    //*******************************************************************************//
-    //
-    //                    ROTATION
-    //
-    //******************************************************************************* */
-
-    //rotation
-    const rotation = ref(0)
-
-    function changeContainerRotation(_val) {
-        setMode("editContainer")
-        setOperation("changeContainerRotation")
-        rotation.value += _val
-    }
-
-    function getRotation() {
-       return rotation.value + "deg"
-    }
 
     //*******************************************************************************//
     //
@@ -339,7 +318,8 @@ const obj = {
             positionX: 0,
             positionY: 0,
             fontSize: 10,  //vh units
-            rotate: "0deg",
+            fontName: "gasoek",
+            rotate: 0,
             textColor: "white"
         }
         
@@ -416,18 +396,35 @@ const obj = {
             return parseInt(val) / windowHeight * 100
     }
 
+    function getFontClassName(ele) {
+
+        var classList = $(ele).attr("class")
+console.log(classList)
+        return classList.split(' ')[0]; 
+    }
+
+    function getRotateValue(ele)  {
+        let val = $(ele).css("rotate")
+
+        if (val === 'none') return val
+
+        return val.substr(0, val.length - 3)
+    }
+    
+
     function saveOverlay() {
         let obj = overlays[overlayIndex.value]
 
-        console.log($("div#" + obj.ID).css("left" )) 
-        console.log($("div#" + obj.ID).css("top" ))
+        const ele = "div#" + obj.ID
 
-        obj.positionX =  convertPixelsToHeightPercentage( $("div#" + obj.ID).css("left" ))
-        obj.positionY = convertPixelsToHeightPercentage($("div#" + obj.ID).css("top" ))
-        obj.textColor= $("div#" + obj.ID).css("color" )
-        obj.rotate =   $("div#" + obj.ID).css("rotate" )
+        obj.positionX =  convertPixelsToHeightPercentage( $(ele).css("left" ))
+        obj.positionY = convertPixelsToHeightPercentage($(ele).css("top" ))
+        obj.textColor= $(ele).css("color" )
+        obj.rotate =  parseFloat(getRotateValue(ele))
 
-        obj.fontSize =  convertPixelsToHeightPercentage($("div#" + obj.ID).css("font-size" ))
+        obj.fontSize =  convertPixelsToHeightPercentage($(ele).css("font-size" ))
+
+        obj.fontName = getFontClassName(ele)
 
         console.dir(obj)
     }
@@ -474,6 +471,8 @@ const obj = {
                 :savedY="overlays[getOverlayIndex()].positionY"
                 :savedColor="overlays[getOverlayIndex()].textColor"
                 :savedFontSize="overlays[getOverlayIndex()].fontSize"
+                :savedFontName="overlays[getOverlayIndex()].fontName"
+                :savedRotate="overlays[getOverlayIndex()].rotate"
             />
     </div>
 
@@ -485,6 +484,8 @@ const obj = {
                 :positionX="obj.positionX" 
                 :positionY="obj.positionY"
                 :textColor ="obj.textColor"
+                :fontName="obj.fontName"
+                :rotate="obj.rotate"
             />
     </div>
 

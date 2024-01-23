@@ -24,6 +24,12 @@
         },
         savedFontSize: {
             type: Number
+        },
+        savedFontName: {
+            type: String
+        },
+        savedRotate: {
+            type: Number
         }
     })
 
@@ -88,9 +94,9 @@
                 if (key == "ArrowLeft" || key == "ArrowDown") changeColorIndex(-1);
             }
 
-            if (operation.value == 'changeContainerRotation') {
-                if (key == "ArrowRight" || key == "ArrowUp") changeContainerRotation(1);
-                if (key == "ArrowLeft" || key == "ArrowDown") changeContainerRotation(-1);
+            if (operation.value == 'changeContainerRotate') {
+                if (key == "ArrowRight" || key == "ArrowUp") changeContainerRotate(1);
+                if (key == "ArrowLeft" || key == "ArrowDown") changeContainerRotate(-1);
             }
             if (operation.value == 'changeContent') {
                 if (key == "ArrowRight" || key == "ArrowUp") changeContent(1);
@@ -126,6 +132,27 @@
 
         setMode("editContainer")
         
+    }
+
+
+
+    //*******************************************************************************//
+    //
+    //                    ROTATION
+    //
+    //******************************************************************************* */
+
+    //rotate
+    const rotate = ref(0)
+
+    function changeContainerRotate(_val) {
+        setMode("editContainer")
+        setOperation("changeContainerRotate")
+        rotate.value += _val
+    }
+
+    function getRotate() {
+       return rotate.value + "deg"
     }
 
 //*******************************************************************************//
@@ -253,6 +280,7 @@
     //
     //******************************************************************************* */
     let initialDraw = true
+    let initialFontDraw = true
     var lastX, lastY
     let operationChangeToMove = false
 
@@ -268,6 +296,7 @@
             posY.value = props.savedY
             textColor = props.savedColor
             fontSize.value = props.savedFontSize
+            rotate.value = props.savedRotate
             initialDraw = false
         }
         else {
@@ -301,7 +330,7 @@
             top: posY.value + "vh",
             left: posX.value + "vh",
             fontSize: fontSize.value + "vh",
-            rotate: props.obj.rotate,
+            rotate: rotate.value + "deg",
             color: textColor
         }
     }
@@ -322,12 +351,26 @@
         return props.obj.ID
     }
 
+    function getClassList(ele) {
+        if (initialFontDraw) {
+            initialFontDraw = false
+
+            const index = arrFontNames.indexOf(props.savedFontName)
+
+            if (index !== undefined) fontIndex.value = index
+
+            return props.savedFontName + " headline selectedOverlay"
+        }
+        return arrFonts[fontIndex.value] + " headline selectedOverlay"
+    }
+
+
 </script>
 
 
 <template>
     <div>
-        <div :id="getDivID()" class="headline selectedOverlay" :style="getStyleObject()">
+        <div :id="getDivID()" :class="getClassList()" :style="getStyleObject()">
             <span>{{props.obj.text}} </span>
         </div>
 
@@ -344,7 +387,7 @@
             <span id="btnContainer" :class="getHeaderClass('editContainer')">CONTAINER</span>
             <button @click="changeContainerPosition('mouse')" :class="getEditButtonClass('changeContainerPositionWithMouse')">MOVE (Mouse)</button>
             <button @click="changeContainerPosition('keys')" :class="getEditButtonClass('changeContainerPositionWithArrowKeys')">MOVE (Arrow keys)</button>
-            <button @click="changeContainerRotation(0)" :class="getEditButtonClass('changeContainerRotation')">ROTATE</button> 
+            <button @click="changeContainerRotate(0)" :class="getEditButtonClass('changeContainerRotate')">ROTATE</button> 
             <button id="btnChangeContainerSize" @click="changeContainerSize(0)" :class="getEditButtonClass('changeContainerSize')"> SIZE</button>
 
             <hr>

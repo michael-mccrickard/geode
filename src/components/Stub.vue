@@ -5,15 +5,6 @@
         obj: {
             type: Object,
             required: true
-        },
-        positionX: {
-            type: Number
-        },
-        positionY: {
-            type: Number
-        },
-        ID: {
-            type: Number
         }
     })
 
@@ -24,23 +15,27 @@
         if (props.savedBaseHeight) windowHeight = savedBaseHeight;
 
         return {
-            top: (props.positionY) + "vh",
-            left: (props.positionX) + "vh",
+            top: props.obj.positionY + "vh",
+            left: props.obj.positionX + "vh",
             fontSize: props.obj.fontSize + "vh",
-            rotate: props.obj.rotate,
-            color: props.obj.textColor
+            color: props.obj.textColor,
+            rotate: props.obj.rotate + "deg"
         }
     }
 
+    function getClassList() {
+        return props.obj.fontName + " headline stub"
+    }
+
     function getDivID() {
-        return props.ID
+        return props.obj.ID
     }
 </script>
 
 
 <template>
     <div>
-        <div :id="getDivID()" class="headline stub" :style="getStyleObject()">
+        <div :id="getDivID()" :class="getClassList()" :style="getStyleObject()">
             <span>{{ props.obj.text }}</span>
         </div>
     </div>
