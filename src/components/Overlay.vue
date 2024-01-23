@@ -254,6 +254,14 @@
         return arrColors[colorIndex.value];
     }
 
+    function syncColorIndex() {
+
+        const index = arrColors.indexOf(props.obj.color)
+
+        if (index !== undefined) colorIndex.value = index
+
+    }
+
     //*******************************************************************************//
     //
     //                    MODE AND OPERATIONS
@@ -284,31 +292,40 @@
     var lastX, lastY
     let operationChangeToMove = false
 
+/*     posX.value = props.savedX
+            posY.value = props.savedY
+            textColor = props.savedColor
+            fontSize.value = props.savedFontSize
+            rotate.value = props.savedRotate
+            initialDraw = false */
+        
+
     function getStyleObject() {
         var windowHeight = window.innerHeight;
 
         if (props.savedBaseHeight) windowHeight = savedBaseHeight;
 
-        var textColor
+        var color
 
         if (initialDraw) {
-            posX.value = props.savedX
-            posY.value = props.savedY
-            textColor = props.savedColor
-            fontSize.value = props.savedFontSize
-            rotate.value = props.savedRotate
+            posX.value = props.obj.positionX
+            posY.value = props.obj.positionY
+            color = props.obj.color
+            syncColorIndex()
+            fontSize.value = props.obj.fontSize
+            rotate.value = props.obj.rotate
             initialDraw = false
         }
         else {
 
-            textColor = getColor()  
+            color = getColor()  
 
             if (operation.value === 'changeContainerPositionWithMouse') {
 
                 if (!operationChangeToMove) {  //trap the first call which tends to jerk the container unexpectedly
                                                 //to the last place the mouse was clicked
-                    posX.value = props.positionX
-                    posY.value = props.positionY  
+                    posX.value = props.obj.positionX
+                    posY.value = props.obj.positionY
                 }
                 else {
                     operationChangeToMove = false
@@ -331,7 +348,7 @@
             left: posX.value + "vh",
             fontSize: fontSize.value + "vh",
             rotate: rotate.value + "deg",
-            color: textColor
+            color: color
         }
     }
 
@@ -355,11 +372,11 @@
         if (initialFontDraw) {
             initialFontDraw = false
 
-            const index = arrFontNames.indexOf(props.savedFontName)
+            const index = arrFontNames.indexOf(props.obj.fontName)
 
-            if (index !== undefined) fontIndex.value = index
+            if (index !== -1) fontIndex.value = index
 
-            return props.savedFontName + " headline selectedOverlay"
+            return props.obj.fontName + " headline selectedOverlay"
         }
         return arrFonts[fontIndex.value] + " headline selectedOverlay"
     }

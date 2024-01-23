@@ -399,7 +399,6 @@ const obj = {
     function getFontClassName(ele) {
 
         var classList = $(ele).attr("class")
-console.log(classList)
         return classList.split(' ')[0]; 
     }
 
@@ -419,11 +418,10 @@ console.log(classList)
 
         obj.positionX =  convertPixelsToHeightPercentage( $(ele).css("left" ))
         obj.positionY = convertPixelsToHeightPercentage($(ele).css("top" ))
-        obj.textColor= $(ele).css("color" )
+        obj.color = $(ele).css("color" )
         obj.rotate =  parseFloat(getRotateValue(ele))
 
         obj.fontSize =  convertPixelsToHeightPercentage($(ele).css("font-size" ))
-
         obj.fontName = getFontClassName(ele)
 
         console.dir(obj)
@@ -465,14 +463,6 @@ console.log(classList)
             <Overlay
                 :key="getOverlayIndex()"
                 :obj="overlays[getOverlayIndex()]"
-                :positionX="getOverlayPositionX()" 
-                :positionY="getOverlayPositionY()" 
-                :savedX="overlays[getOverlayIndex()].positionX"
-                :savedY="overlays[getOverlayIndex()].positionY"
-                :savedColor="overlays[getOverlayIndex()].textColor"
-                :savedFontSize="overlays[getOverlayIndex()].fontSize"
-                :savedFontName="overlays[getOverlayIndex()].fontName"
-                :savedRotate="overlays[getOverlayIndex()].rotate"
             />
     </div>
 
@@ -481,11 +471,6 @@ console.log(classList)
                 v-for="(obj, index) in filteredOverlays()"
                 :key="index"
                 :obj="obj"
-                :positionX="obj.positionX" 
-                :positionY="obj.positionY"
-                :textColor ="obj.textColor"
-                :fontName="obj.fontName"
-                :rotate="obj.rotate"
             />
     </div>
 
@@ -535,5 +520,14 @@ console.log(classList)
                     :rotation="getRotation()" 
                     :savedBasedHeight="savedBaseHeight"
                     :containerWidth="getContainerWidth()"
-                    :operation="getOperation()"
+                    :operation="getOperation()
                     :updateKey = "getUpdateKey()" -->
+
+<!--                     :positionX="getOverlayPositionX()" 
+                    :positionY="getOverlayPositionY()" 
+                    :savedX="overlays[getOverlayIndex()].positionX"
+                    :savedY="overlays[getOverlayIndex()].positionY"
+                    :savedColor="overlays[getOverlayIndex()].textColor"
+                    :savedFontSize="overlays[getOverlayIndex()].fontSize"
+                    :savedFontName="overlays[getOverlayIndex()].fontName"
+                    :savedRotate="overlays[getOverlayIndex()].rotate" -->
