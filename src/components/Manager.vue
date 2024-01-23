@@ -63,30 +63,7 @@ doc = { filename: filename.value }
     })
 
 
-    //*******************************************************************************//
-    //
-    //                    HEADLINE TEXT
-    //
-    //******************************************************************************* */
 
-    var savedBaseHeight = 0;
-    let headlineIndex = ref(0);
-    let containerWidth = ref(100);
-    const containerWidthInc = 5
-
-    function getContainerWidth() {
-        return containerWidth.value;
-    }
-
-    function changeContainerSize(_val) {
-        setMode("editContainer")
-        setOperation("changeContainerSize")
-
-        var temp = containerWidth.value
-        temp += _val
-
-        containerWidth.value =  Math.min(temp, 100)
-    }
 
     //text value for headline
     const strHeadline = ref(arrSourceNames[0]);
@@ -304,7 +281,8 @@ const obj = {
             fontSize: 10,  //vh units
             fontName: "gasoek",
             rotate: 0,
-            color: "rgb(255, 255, 255)"
+            color: "rgb(255, 255, 255)",
+            width: 100
         }
         
         overlays.push(obj)
@@ -408,24 +386,14 @@ const obj = {
         obj.fontSize =  convertPixelsToHeightPercentage($(ele).css("font-size" ))
         obj.fontName = getFontClassName(ele)
 
+        obj.width = convertPixelsToHeightPercentage($(ele).css("width" ))
+
         console.dir(obj)
     }
 
     function doEditOverlay(int) {
         overlayIndex.value = int;
         mode.value = "editOverlay"
-    }
-
-    function getOverlayPositionX() {
-        const obj = overlays[overlayIndex.value]
-
-        return convertToHeightPercentage(getPosX() )
-    }
-
-    function getOverlayPositionY() {
-        const obj = overlays[overlayIndex.value]
-        
-        return convertToHeightPercentage(getPosY() )
     }
 
     //*******************************************************************************//

@@ -61,7 +61,7 @@
 
         if (key.startsWith('Arrow')) {
 
-            if (operation.value == 'changeContainerPositionWithArrowKeys') {
+            if (operation.value == 'changeContainerPosition') {
 
                 if (event.shiftKey) {
                     amount = 10;
@@ -265,9 +265,32 @@
         //not synced properly here and this is causing unwanted color changes in getStyleObject()
 
         const index = arrColors.indexOf(props.obj.color)
-console.log("color index synced to " + index)
+
         if (index !== -1) colorIndex.value = index
 
+    }
+
+    //*******************************************************************************//
+    //
+    //                     TEXT and CONTAINER
+    //
+    //******************************************************************************* */
+
+    let containerWidth = ref(100);
+    const containerWidthInc = 5
+
+    function getContainerWidth() {
+        return containerWidth.value;
+    }
+
+    function changeContainerSize(_val) {
+        setMode("editContainer")
+        setOperation("changeContainerSize")
+
+        var temp = containerWidth.value
+        temp += _val
+
+        containerWidth.value =  Math.min(temp, 100)
     }
 
     //*******************************************************************************//
@@ -329,6 +352,8 @@ console.log("color index synced to " + index)
             //font face gets synced in first call to getClassList()
 
             rotate.value = props.obj.rotate
+
+            containerWidth.value = props.obj.width
             initialDraw = false
         }
         else {
@@ -344,7 +369,8 @@ console.log("color index synced to " + index)
             left: getPosX() + "vh",
             fontSize: fontSize.value + "vh",
             rotate: rotate.value + "deg",
-            color: color
+            color: color,
+            width: getContainerWidth() + "%"
         }
     }
 
@@ -394,15 +420,15 @@ console.log("color index synced to " + index)
     <div>
         <div class="container">
             <img :src= "props.filename" @click="clickEventOnImg"/>
-        </div>
-        <div :id="getDivID()" :class="getClassList()" :style="getStyleObject()" data-colorName="getColorName()">
-            <span>{{props.obj.text}} </span>
-        </div>
 
+            <div :id="getDivID()" :class="getClassList()" :style="getStyleObject()" data-colorName="getColorName()">
+                <span>{{props.obj.text}} </span>
+            </div>
+        </div>
 
     <div class="editoverlay-div">
             <span id="btnOverlay" :class="getHeaderClass('editOverlay')">OVERLAY</span>
-            <button @click="changeContent()" :class="getEditButtonClass('changeContent')">CONTENT</button> 
+            <button @click="changeContent()" :class="getEditButtonClass('changeContent')">{{ props.obj.text }}</button> 
             <button @click="changeFontIndex(1)" :class="getEditButtonClass('changeFontIndex')">CHANGE FONT</button>
             <button @click="changeColorIndex(1)" :class="getEditButtonClass('changeColorIndex')">FONT COLOR</button>
             <button id="btnChangeFontSize" @click="changeFontSize(0)" :class="getEditButtonClass('changeFontSize')">FONT SIZE</button>

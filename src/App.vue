@@ -1,6 +1,6 @@
 <script setup>
 
-  import GraphicEditor  from './components/GraphicEditor.vue';
+  import Manager  from './components/Manager.vue';
 
 </script>
 
@@ -8,7 +8,7 @@
 
 <template>
 
-  <GraphicEditor />
+  <Manager />
 
 </template>
 

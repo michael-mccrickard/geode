@@ -12,14 +12,13 @@
     function getStyleObject() {
         var windowHeight = window.innerHeight;
 
-        if (props.savedBaseHeight) windowHeight = savedBaseHeight;
-
         return {
             top: props.obj.posY + "vh",
             left: props.obj.posX + "vh",
             fontSize: props.obj.fontSize + "vh",
             color: props.obj.color,
-            rotate: props.obj.rotate + "deg"
+            rotate: props.obj.rotate + "deg",
+            width: (props.obj.width /100) * windowHeight + "px"
         }
     }
 
