@@ -15,29 +15,41 @@
     //********************************************************************************/
 
     const filename = ref("")
-    
-    let doc = {}
+
+    let arrDocuments = []
+
+    const docIndex = ref(-1)
 
     function getFilename() {
         return filename.value
     }
 
     function exitNewDocument() {
+        saveDocument()
+        saveDocuments()
+        arrOverlays = []
         mode.value = "startup"
     }
 
- //Clicking the NEW button initializes these variables and puts us in edit mode
+ //Clicking the NEW button initializes these variables and puts us in addOrSelectOverlay mode
     function createNewDocument(_txt) {
 
-        overlays = []
+        arrOverlays.length = []
         overlayIndex.value = 0
+
+        docIndex.value++
+
         
         filename.value = "./mag_" + _txt + "_notext.png"
         mode.value = "addOrSelectOverlay"
 
-doc = { filename: filename.value }
+        docIndex.value  = arrDocuments.length;
 
-        updateKey.value++
+        const obj = { filename: filename.value, name: "Document " +  docIndex.value, overlays: []}
+
+        arrDocuments.push( obj )
+
+        //updateKey.value++
     }
 
     function fileIsLoaded() {
@@ -49,20 +61,34 @@ doc = { filename: filename.value }
         }
     }
 
-
-
     function loadDocuments() {
-        const documents = JSON.parse(localStorage.getItem('geode-documents') || '[]');
-        return documents;
+        const arrDocuments = JSON.parse(localStorage.getItem('geode-documents') || '[]');
+        return arrDocuments;
     }
     function saveDocuments() {
-        localStorage.setItem('geode-documents', JSON.stringify(documents));
+        localStorage.setItem('geode-documents', JSON.stringify(arrDocuments));
     }
-    function selectDocument(docId) {
-        selectedDocument = documents.find(doc => doc.id === docId);
+
+    function saveDocument() {
+        //localStorage.setItem('geode-documents', JSON.stringify(documents));
+console.log("in saveDocument, docIndex is " + docIndex.value)
+        arrDocuments[docIndex.value].overlays  = Array.from(arrOverlays);  //copy it, don't just pass the reference
+
+        console.log(arrDocuments[docIndex.value].overlays)
+    }
+
+    function selectDocument(index) {
+
+        docIndex.value= (index )
+
+        arrOverlays = arrDocuments[ index ].overlays
+
+        //selectedDocument = arrDocuments.find(doc => doc.id === docId);
+
+        mode.value = "addOrSelectOverlay"
     }
     function deleteDocument(docId) {
-        documents = documents.filter(doc => doc.id !== docId);
+        arrDocuments = arrDocuments.filter(doc => doc.id !== docId);
         saveDocuments();
     }
 
@@ -91,7 +117,9 @@ doc = { filename: filename.value }
         arrSource.push(obj);
     })
 
-
+    function loadNationButtons() {
+        mode.value = 'selectBG'
+    }
 
     //*******************************************************************************//
     //
@@ -105,14 +133,11 @@ doc = { filename: filename.value }
         operation.value = "changeContent"
     }
 
- 
-
     function submitContentForm(e) {
-        overlays[overlayIndex.value].text = content
+        arrOverlays[overlayIndex.value].text = content
         setOperation("")
         updateKey.value++
     }
-
 
     //*******************************************************************************//
     //
@@ -122,6 +147,11 @@ doc = { filename: filename.value }
 
     //mode: startup, selectBG, selectEditMode, editOverlay, editContainer  or playback
     const mode = ref("startup");
+    const updateKey = ref(0);
+
+    function getUpdateKey() {
+        return updateKey.value
+    }
 
     function isOperation(str) {
         if (str === operation.value) return true
@@ -130,10 +160,6 @@ doc = { filename: filename.value }
 
     function setMode(str) {
         mode.value = str
-    }
-
-    function loadNationButtons() {
-        mode.value = 'selectBG'
     }
 
     //Edit operations: changeContent or ""
@@ -149,7 +175,6 @@ doc = { filename: filename.value }
 
     function isMode(_str) {
         if (_str === mode.value) return true;
-        if (_str === 'editOrPlayback' && (mode.value === 'playback' || mode.value === 'edit')) return true;
     }
 
     function getMode() {
@@ -159,14 +184,6 @@ doc = { filename: filename.value }
     function getOperation() {
         return operation.value
     }
-
-    const updateKey = ref(0);
-
-    function getUpdateKey() {
-        return updateKey.value
-    }
-
-    
 
     //*******************************************************************************//
     //
@@ -181,7 +198,7 @@ doc = { filename: filename.value }
 
     var storageIndex = -1;
 
-    function saveData() {
+    function saveDocument2() {
         var tmp = JSON.stringify({ 
 
             imgFilename: filename.value,
@@ -249,19 +266,19 @@ doc = { filename: filename.value }
     //
     //******************************************************************************* */
 
-    let overlays = []
+    let arrOverlays = []
 
     const overlayIndex = ref(0)
 
-    let counter = -1
+    let newOverlayCounter = -1
 
     function createNewOverlay() {
         
-        counter++
+        newOverlayCounter = arrOverlays.length
 
         let obj = {
-            text: "Your text here " + counter,
-            ID: "o" + counter,
+            text: "Your text here " + newOverlayCounter,
+            ID: "o" + newOverlayCounter,
             posX: 0,
             posY: 0,
             fontSize: 10,  //vh units
@@ -270,10 +287,10 @@ doc = { filename: filename.value }
             color: "rgb(255, 255, 255)",
             width: 100
         }
-        
-        overlays.push(obj)
 
-        overlayIndex.value = counter
+        arrOverlays.push(obj)
+
+        overlayIndex.value = newOverlayCounter
 
         mode.value = "editOverlay"
     }
@@ -290,13 +307,13 @@ doc = { filename: filename.value }
 
 
     function filteredOverlays() {
-        if (mode.value === "addOrSelectOverlay") return overlays;
-        return overlays.filter(obj => obj.ID !== "o" + overlayIndex.value)
+        if (mode.value === "addOrSelectOverlay") return arrOverlays;
+        return arrOverlays.filter(obj => obj.ID !== "o" + overlayIndex.value)
     }
 
     function selectOverlay(overlayId) {
         if (selectedDocument) {
-            selectedOverlay = selectedDocument.overlays.find(overlay => overlay.id === overlayId);
+            selectedOverlay = selectedDocument.arrOverlays.find(overlay => overlay.id === overlayId);
         }
     }
 
@@ -327,7 +344,7 @@ doc = { filename: filename.value }
 
 
     function saveOverlay() {
-        let obj = overlays[overlayIndex.value]
+        let obj = arrOverlays[overlayIndex.value]
 
         const ele = "div#" + obj.ID
 
@@ -349,6 +366,14 @@ doc = { filename: filename.value }
         mode.value = "editOverlay"
     }
 
+    function hasOverlays() {
+        return (arrOverlays.length ? true : false)
+    }
+
+    function getOverlayText() {
+        return arrOverlays[overlayIndex.value].text
+    }
+
 
 
     //*******************************************************************************//
@@ -356,7 +381,7 @@ doc = { filename: filename.value }
     //                    TEMPLATE
     //
     //******************************************************************************* */
-    
+    //                :updateKey = "getUpdateKey()"
 </script>
 
 
@@ -369,9 +394,9 @@ doc = { filename: filename.value }
      <div v-if = "isMode('editOverlay')" id="editOverlaySpace">
             <Overlay
                 :key="getOverlayIndex()"
-                :obj="overlays[getOverlayIndex()]"
+                :obj="arrOverlays[getOverlayIndex()]"
                 :filename="getFilename()"
-                :updateKey = "getUpdateKey()"
+
             />
     </div>
 
@@ -387,7 +412,10 @@ doc = { filename: filename.value }
 
         <div v-if="isMode('startup')">
             <button @click="loadNationButtons()" class="controlButton unselected">NEW</button> 
-            <button @click="loadData()" class="controlButton unselected">LOAD</button>   
+            <button @click="loadDocuments()" class="controlButton unselected">LOAD</button>  
+            <div v-for="(obj, index) in arrDocuments">
+                <button @click="selectDocument(index)"> {{ obj.name }}</button>
+            </div> 
         </div>
 
         <div v-if="isMode('selectBG')">
@@ -397,6 +425,7 @@ doc = { filename: filename.value }
         </div>
 
         <div v-if="isMode('addOrSelectOverlay')">
+            <span id="docName">{{ }}</span>
             <button  class="controlButton" @click="createNewOverlay()">+ OVERLAY</button>    
             <button  class="controlButton" @click="exitNewDocument()">EXIT</button>  
             <div v-for="(obj, index) in filteredOverlays()">
@@ -405,7 +434,7 @@ doc = { filename: filename.value }
         </div>
 
         <div v-if="isMode('editOverlay')" class="saveOrExitContainer">
-            <button class="controlButton" @click="changeContent()">{{ overlays[getOverlayIndex()].text }}</button> 
+            <button v-if="hasOverlays()" class="controlButton" @click="changeContent()">{{ getOverlayText() }}</button> 
             
             <form  v-if="isOperation('changeContent')">
                 <span>TEXT</span><br>
