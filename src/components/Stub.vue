@@ -8,11 +8,6 @@
         }
     })
 
-    function convertHeightPercentageToPixels(val) {
-        var windowHeight = window.innerHeight;
-         return (parseFloat(val) / 100) * windowHeight
-    }
-
     function getStyleObject() {
         var windowHeight = window.innerHeight;
 
@@ -22,7 +17,7 @@
             fontSize: props.obj.fontSize + "vh",
             color: props.obj.color,
             rotate: props.obj.rotate + "deg",
-            width:  convertHeightPercentageToPixels(props.obj.width) + "px"
+            width:  props.obj.width + "%"
         }
     }
 
@@ -37,9 +32,9 @@
 
 
 <template>
-    <div>
-        <div :id="getDivID()" :class="getClassList()" :style="getStyleObject()">
-            <span>{{ props.obj.text }}</span>
-        </div>
+
+    <div :id="getDivID()" :class="getClassList()" :style="getStyleObject()">
+        <span>{{ props.obj.text }}</span>
     </div>
+
 </template>

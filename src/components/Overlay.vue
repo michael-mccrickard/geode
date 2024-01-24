@@ -418,30 +418,28 @@
 
 <template>
     <div>
-        <div class="container">
-            <img :src= "props.filename" @click="clickEventOnImg"/>
-
-            <div :id="getDivID()" :class="getClassList()" :style="getStyleObject()" data-colorName="getColorName()">
+        <div>
+            <div :id="getDivID()" :class="getClassList()" :style="getStyleObject()">
                 <span>{{props.obj.text}} </span>
             </div>
         </div>
 
-    <div class="editoverlay-div">
-            <span id="btnOverlay" :class="getHeaderClass('editOverlay')">OVERLAY</span>
-            <button @click="changeContent()" :class="getEditButtonClass('changeContent')">{{ props.obj.text }}</button> 
-            <button @click="changeFontIndex(1)" :class="getEditButtonClass('changeFontIndex')">CHANGE FONT</button>
-            <button @click="changeColorIndex(1)" :class="getEditButtonClass('changeColorIndex')">FONT COLOR</button>
-            <button id="btnChangeFontSize" @click="changeFontSize(0)" :class="getEditButtonClass('changeFontSize')">FONT SIZE</button>
-            <button @click="makeList()">TEST</button>
-            <hr>
+        <div class="editoverlay-div">
+                <span id="btnOverlay" :class="getHeaderClass('editOverlay')">OVERLAY</span>
+                <button @click="changeContent()" :class="getEditButtonClass('changeContent')">{{ props.obj.text }}</button> 
+                <button @click="changeFontIndex(1)" :class="getEditButtonClass('changeFontIndex')">CHANGE FONT</button>
+                <button @click="changeColorIndex(1)" :class="getEditButtonClass('changeColorIndex')">FONT COLOR</button>
+                <button id="btnChangeFontSize" @click="changeFontSize(0)" :class="getEditButtonClass('changeFontSize')">FONT SIZE</button>
+                <!-- <button @click="makeList()">TEST</button> -->
+                <hr>
 
-            <span id="btnContainer" :class="getHeaderClass('editContainer')">CONTAINER</span>
-            <button @click="changeContainerPosition()" :class="getEditButtonClass('changeContainerPosition')">MOVE (Arrow keys)</button>
-            <button @click="changeContainerRotate(0)" :class="getEditButtonClass('changeContainerRotate')">ROTATE</button> 
-            <button id="btnChangeContainerSize" @click="changeContainerSize(0)" :class="getEditButtonClass('changeContainerSize')"> SIZE</button>
+                <span id="btnContainer" :class="getHeaderClass('editContainer')">CONTAINER</span>
+                <button @click="changeContainerPosition()" :class="getEditButtonClass('changeContainerPosition')">MOVE (Arrow keys)</button>
+                <button @click="changeContainerRotate(0)" :class="getEditButtonClass('changeContainerRotate')">ROTATE</button> 
+                <button id="btnChangeContainerSize" @click="changeContainerSize(0)" :class="getEditButtonClass('changeContainerSize')"> SIZE</button>
 
-            <hr>
-                
+                <hr>
+                    
         </div>
 
     </div>

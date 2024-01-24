@@ -286,8 +286,12 @@ doc = { filename: filename.value }
         mode.value = "addOrSelectOverlay"
     }
 
-    function fileIsLoaded() {
-        if (filename.value.length & mode.value !== "editOverlay") {
+    function fileIsNewlyLoaded() {
+
+    console.log(filename.value.length)
+    console.log(mode.value)
+    console.log( overlaysAreEmpty())
+        if (filename.value.length && mode.value !== "editOverlay" && overlaysAreEmpty()) {
             return true
         }
         else {
@@ -296,10 +300,7 @@ doc = { filename: filename.value }
 
     }
 
-    function filteredOverlays() {
-        if (mode.value === "addOrSelectOverlay") return overlays;
-        return overlays.filter(obj => obj.ID !== "o" + overlayIndex.value)
-    }
+
 
     function loadDocuments() {
         const documents = JSON.parse(localStorage.getItem('geode-documents') || '[]');
@@ -381,6 +382,21 @@ doc = { filename: filename.value }
         mode.value = "editOverlay"
     }
 
+    function hasOverlays() {
+        if (overlays.length) return true
+        return false
+    }
+
+    function isNotMode(str) {
+        if (mode.value === str) return false
+        return true
+    }
+
+    function filteredOverlays() {
+        //if (mode.value === "addOrSelectOverlay") return overlays;
+        return overlays.filter(obj => obj.ID !== "o" + overlayIndex.value)
+    }
+
     //*******************************************************************************//
     //
     //                    TEMPLATE
@@ -392,57 +408,57 @@ doc = { filename: filename.value }
 
 <template>
 <div>
-    <div v-if = "fileIsLoaded()" class="container">
-        <img :src= "getFilename()">
+
+     <div  v-if="hasOverlays()" class="container">
+        <img :src= "getFilename()" />
+        <Overlay
+            :key="getOverlayIndex()"
+            :obj="overlays[getOverlayIndex()]"
+            :filename="getFilename()"
+        />
+
+        <Stub 
+        v-for="(obj, index) in filteredOverlays()"
+        :key="index"
+        :index="index"
+        :obj="obj"
+        />
     </div>
 
-     <div v-if = "isMode('editOverlay')" id="editOverlaySpace">
-            <Overlay
-                :key="getOverlayIndex()"
-                :obj="overlays[getOverlayIndex()]"
-                :filename="getFilename()"
-            />
-    </div>
 
-    <div id="stubOverlaySpace">
-            <Stub 
-                v-for="(obj, index) in filteredOverlays()"
-                :key="index"
-                :obj="obj"
-            />
-    </div>
+        <div class="right-justified-div">
 
-    <div class="right-justified-div">
-
-        <div v-if="isMode('startup')">
-            <button @click="loadNationButtons()" class="controlButton unselected">NEW</button> 
-            <button @click="loadData()" class="controlButton unselected">LOAD</button>   
-        </div>
-
-        <div v-if="isMode('selectBG')">
-            <div v-for="item in arrSource" :key="item.id">
-                <button @click="createNewDocument(item.name)"> {{ item.name }}</button>
+            <div v-if="isMode('startup')">
+                <button @click="loadNationButtons()" class="controlButton unselected">NEW</button> 
+                <button @click="loadData()" class="controlButton unselected">LOAD</button>   
             </div>
-        </div>
 
-        <div v-if="isMode('addOrSelectOverlay')">
-            <button @click="createNewOverlay()">+ OVERLAY</button>    
-            <button @click="exitNewDocument()">EXIT</button>  
-            <div v-for="(obj, index) in filteredOverlays()">
-                <button @click="doEditOverlay(index)"> {{ obj.text }}</button>
+            <div v-if="isMode('selectBG')">
+                <div v-for="item in arrSource" :key="item.id">
+                    <button @click="createNewDocument(item.name)"> {{ item.name }}</button>
+                </div>
             </div>
+
+            <div v-if="isMode('addOrSelectOverlay')">
+                <button @click="createNewOverlay()">+ OVERLAY</button>    
+                <button @click="exitNewDocument()">EXIT</button>  
+                <div v-for="(obj, index) in filteredOverlays()">
+                    <button @click="doEditOverlay(index)"> {{ obj.text }}</button>
+                </div>
+            </div>
+
+            <div v-if="isMode('editOverlay')" class="saveOrExitContainer">
+                <button @click="saveOverlay()" >SAVE</button>    
+                <button @click="exitEditOverlay()">EXIT</button>  
+             </div>
+
+            <div v-if="isMode('playback')">
+                <button @click="exitPlaybackMode()">EXIT</button>    
+                <button @click="editLoadedDocument()">EDIT</button>  
+            </div>    
         </div>
 
-        <div v-if="isMode('editOverlay')" class="saveOrExitContainer">
-            <button @click="saveOverlay()" >SAVE</button>    
-            <button @click="exitEditOverlay()">EXIT</button>  
-        </div>
 
-        <div v-if="isMode('playback')">
-            <button @click="exitPlaybackMode()">EXIT</button>    
-            <button @click="editLoadedDocument()">EDIT</button>  
-        </div>
-        
-    </div>
+
 </div>
 </template>
