@@ -137,8 +137,12 @@ html, body {
 
 .controlButton {
   display: inline;
-  padding: 4px;
-  margin: 5px;
+  padding: 10px;
+  margin: 10px;
+}
+
+.inputTextArea {
+  width: 100%;
 }
 
 .header {

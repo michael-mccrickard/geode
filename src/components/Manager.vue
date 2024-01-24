@@ -421,31 +421,31 @@ doc = { filename: filename.value }
         </div>
 
         <div v-if="isMode('addOrSelectOverlay')">
-            <button @click="createNewOverlay()">+ OVERLAY</button>    
-            <button @click="exitNewDocument()">EXIT</button>  
+            <button  class="controlButton" @click="createNewOverlay()">+ OVERLAY</button>    
+            <button  class="controlButton" @click="exitNewDocument()">EXIT</button>  
             <div v-for="(obj, index) in filteredOverlays()">
                 <button @click="doEditOverlay(index)"> {{ obj.text }}</button>
             </div>
         </div>
 
         <div v-if="isMode('editOverlay')" class="saveOrExitContainer">
-            <button @click="changeContent()">{{ overlays[getOverlayIndex()].text }}</button> 
+            <button class="controlButton" @click="changeContent()">{{ overlays[getOverlayIndex()].text }}</button> 
             
-            <form @submit.prevent="submitContentForm" v-if="isOperation('changeContent')">
+            <form  v-if="isOperation('changeContent')">
                 <span>TEXT</span><br>
-                <input 
+                <textarea @keydown.enter.prevent="submitContentForm()" class="inputTextArea"
                     v-model="content"
                     type="text"
-                    placeholder="Enter your name" 
-                /><br>
+                    placeholder="Enter your text" 
+                /><br><br>
             </form>
-            <button @click="saveOverlay()" >SAVE</button>    
-            <button @click="exitEditOverlay()">EXIT</button>  
+            <button class="controlButton" @click="saveOverlay()" >SAVE</button>    
+            <button  class="controlButton"  @click="exitEditOverlay()">EXIT</button>  
         </div>
 
         <div v-if="isMode('playback')">
-            <button @click="exitPlaybackMode()">EXIT</button>    
-            <button @click="editLoadedDocument()">EDIT</button>  
+            <button  class="controlButton" @click="exitPlaybackMode()">EXIT</button>    
+            <button  class="controlButton" @click="editLoadedDocument()">EDIT</button>  
         </div>
         
     </div>
