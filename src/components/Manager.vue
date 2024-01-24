@@ -62,35 +62,23 @@ doc = { filename: filename.value }
         arrSource.push(obj);
     })
 
-
-
-
-    //text value for headline
-    const strHeadline = ref(arrSourceNames[0]);
-
     function changeContent() {
         setMode("editOverlay")
         operation.value = "changeContent"
-
-        headlineIndex.value++
-        
-        if (headlineIndex.value === arrSourceNames.length) headlineIndex.value = 0;
-
-        strHeadline.value = arrSourceNames[ headlineIndex.value ] 
-
-       //console.log("in changeContent, val is " + strHeadline.value)
-
     }
 
-    function getOverlayData() {
+    var content
 
-        const obj = {
-            text: "Your text here"
-        }
+    function submitContentForm(e) {
 
-        return obj;
+        console.log( content )
+
+        overlays[overlayIndex.value].text = content
+
+        setOperation("")
+
+        updateKey.value++
     }
-
 
     //*******************************************************************************//
     //
@@ -102,6 +90,10 @@ doc = { filename: filename.value }
     const mode = ref("startup");
 
 
+    function isOperation(str) {
+        if (str === operation.value) return true
+        return false
+    }
 
     function setMode(str) {
         mode.value = str
@@ -115,8 +107,8 @@ doc = { filename: filename.value }
         mode.value = 'selectBG'
     }
 
-    //Edit operations: changeContent, changeFontSize, changeFontColor, changeContainerSize, changeContainerPosition, changeContainerRotation
-    const operation = ref("changeContent")
+    //Edit operations: changeContent or ""
+    const operation = ref("")
 
     function setOperation(_str) {
         operation.value = _str;
@@ -167,7 +159,7 @@ doc = { filename: filename.value }
 
     function editLoadedDocument() {
         setMode("editOverlay")
-        setOperation("changeContent")
+        setOperation("")
 
         setTimeout(() => {
             configureUI()
@@ -287,7 +279,7 @@ doc = { filename: filename.value }
     }
 
     function fileIsLoaded() {
-        if (filename.value.length & mode.value !== "editOverlay") {
+        if (filename.value.length && mode.value !== "editOverlay") {
             return true
         }
         else {
@@ -381,6 +373,8 @@ doc = { filename: filename.value }
         mode.value = "editOverlay"
     }
 
+
+
     //*******************************************************************************//
     //
     //                    TEMPLATE
@@ -401,6 +395,7 @@ doc = { filename: filename.value }
                 :key="getOverlayIndex()"
                 :obj="overlays[getOverlayIndex()]"
                 :filename="getFilename()"
+                :updateKey = "getUpdateKey()"
             />
     </div>
 
@@ -434,6 +429,16 @@ doc = { filename: filename.value }
         </div>
 
         <div v-if="isMode('editOverlay')" class="saveOrExitContainer">
+            <button @click="changeContent()">{{ overlays[getOverlayIndex()].text }}</button> 
+            
+            <form @submit.prevent="submitContentForm" v-if="isOperation('changeContent')">
+                <span>TEXT</span><br>
+                <input 
+                    v-model="content"
+                    type="text"
+                    placeholder="Enter your name" 
+                /><br>
+            </form>
             <button @click="saveOverlay()" >SAVE</button>    
             <button @click="exitEditOverlay()">EXIT</button>  
         </div>

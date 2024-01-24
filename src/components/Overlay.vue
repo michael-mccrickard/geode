@@ -293,6 +293,8 @@
         containerWidth.value =  Math.min(temp, 100)
     }
 
+
+
     //*******************************************************************************//
     //
     //                    MODE AND OPERATIONS
@@ -312,6 +314,13 @@
         operation.value = _str;
     }
 
+    function isOperation(str) {
+        if (str === operation.value) return true
+        return false
+    }
+
+
+
 
     //*******************************************************************************//
     //
@@ -321,7 +330,6 @@
     let initialDraw = true
     let initialFontDraw = true
     var lastX, lastY
-    let operationChangeToMove = false
 
 /*     posX.value = props.savedX
             posY.value = props.savedY
@@ -428,7 +436,9 @@
 
     <div class="editoverlay-div">
             <span id="btnOverlay" :class="getHeaderClass('editOverlay')">OVERLAY</span>
-            <button @click="changeContent()" :class="getEditButtonClass('changeContent')">{{ props.obj.text }}</button> 
+
+
+
             <button @click="changeFontIndex(1)" :class="getEditButtonClass('changeFontIndex')">CHANGE FONT</button>
             <button @click="changeColorIndex(1)" :class="getEditButtonClass('changeColorIndex')">FONT COLOR</button>
             <button id="btnChangeFontSize" @click="changeFontSize(0)" :class="getEditButtonClass('changeFontSize')">FONT SIZE</button>

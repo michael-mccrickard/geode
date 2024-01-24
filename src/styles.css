@@ -47,7 +47,7 @@ html, body {
 }
 
 .editoverlay-div {
-  width: 10%;
+  width: 20%;
   position: fixed; /* or position: absolute; depending on your requirements */
   top: 0;
   right: 0;
@@ -57,7 +57,7 @@ html, body {
 
 
 .right-justified-div {
-  width: 10%;
+  width: 20%;
   position: fixed; /* or position: absolute; depending on your requirements */
   top: 0;
   right: 0;
@@ -85,8 +85,11 @@ html, body {
 
 .saveOrExitContainer {
   position: absolute;
+  width: 100%;
   bottom: 0;
   right: 0;
+  padding-left: 1vw; 
+  padding-bottom: 1vw; 
 }
 
 
@@ -116,13 +119,13 @@ html, body {
 }
 
 .selectedOverlay {
-  border-style: solid;
-  border-color: rgb(255, 0, 0);
-  border-width: 1px;
+  background-color: rgb(0 0 0 / 50%);
 }
 
 .showBox {
-  background-color: rgb(0 0 0 / 50%);
+  border-style: solid;
+  border-color: rgb(255, 0, 0);
+  border-width: 1px;
 }
 
 .editButton {
