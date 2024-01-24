@@ -1,5 +1,4 @@
 <script setup>
-    import { ref, onMounted, onUnmounted, onUpdated} from 'vue'
 
     const props = defineProps({
         obj: {
@@ -7,11 +6,6 @@
             required: true
         }
     })
-
-    function convertHeightPercentageToPixels(val) {
-        var windowHeight = window.innerHeight;
-         return (parseFloat(val) / 100) * windowHeight
-    }
 
     function getStyleObject() {
         var windowHeight = window.innerHeight;

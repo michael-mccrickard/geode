@@ -3,26 +3,28 @@
 <script setup>
     import Overlay from "./Overlay.vue";
     import Stub from "./Stub.vue";
-
-    import { ref, computed, onMounted, onUnmounted, onUpdated, reactive, toRefs } from 'vue'
+    import { convertPixelsToHeightPercentage, convertToHeightPercentage } from './utils.js'
+    import { ref } from 'vue'
     import $ from 'jquery'
-
-
 
 
     //*******************************************************************************//
     //
-    //                    DOCUMENT CREATION
+    //                    DOCUMENTS
     //
     //********************************************************************************/
 
     const filename = ref("")
+    
+    let doc = {}
 
     function getFilename() {
         return filename.value
     }
 
-    let doc = {}
+    function exitNewDocument() {
+        mode.value = "startup"
+    }
 
  //Clicking the NEW button initializes these variables and puts us in edit mode
     function createNewDocument(_txt) {
@@ -37,6 +39,33 @@ doc = { filename: filename.value }
 
         updateKey.value++
     }
+
+    function fileIsLoaded() {
+        if (filename.value.length && mode.value !== "editOverlay") {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+
+
+
+    function loadDocuments() {
+        const documents = JSON.parse(localStorage.getItem('geode-documents') || '[]');
+        return documents;
+    }
+    function saveDocuments() {
+        localStorage.setItem('geode-documents', JSON.stringify(documents));
+    }
+    function selectDocument(docId) {
+        selectedDocument = documents.find(doc => doc.id === docId);
+    }
+    function deleteDocument(docId) {
+        documents = documents.filter(doc => doc.id !== docId);
+        saveDocuments();
+    }
+
 
     //*******************************************************************************//
     //
@@ -62,23 +91,28 @@ doc = { filename: filename.value }
         arrSource.push(obj);
     })
 
+
+
+    //*******************************************************************************//
+    //
+    //                    TEXT EDITING
+    //
+    //********************************************************************************/
+    var content
+
     function changeContent() {
         setMode("editOverlay")
         operation.value = "changeContent"
     }
 
-    var content
+ 
 
     function submitContentForm(e) {
-
-        console.log( content )
-
         overlays[overlayIndex.value].text = content
-
         setOperation("")
-
         updateKey.value++
     }
+
 
     //*******************************************************************************//
     //
@@ -89,7 +123,6 @@ doc = { filename: filename.value }
     //mode: startup, selectBG, selectEditMode, editOverlay, editContainer  or playback
     const mode = ref("startup");
 
-
     function isOperation(str) {
         if (str === operation.value) return true
         return false
@@ -97,10 +130,6 @@ doc = { filename: filename.value }
 
     function setMode(str) {
         mode.value = str
-    }
-
-    function exitEditMode() {
-        mode.value = 'startup'
     }
 
     function loadNationButtons() {
@@ -113,18 +142,6 @@ doc = { filename: filename.value }
     function setOperation(_str) {
         operation.value = _str;
     }
-
-    //Select Mode:  list only the nations, Edit mode: add the edit buttons and the done button, make the bg blue
-    function getMenuBarStyle() {
-        if (mode.value == 'edit') {
-            return "right-justified-div editmode-div"
-        }
-        else {
-            return "right-justified-div"
-        }
-    }
-
-
 
     function exitPlaybackMode() {
         mode.value = "startup"
@@ -160,15 +177,6 @@ doc = { filename: filename.value }
     function editLoadedDocument() {
         setMode("editOverlay")
         setOperation("")
-
-        setTimeout(() => {
-            configureUI()
-        }, 100);
-
-        setTimeout(() => {
-            updateKey.value++
-        }, 200);
-
     }
 
     var storageIndex = -1;
@@ -235,10 +243,11 @@ doc = { filename: filename.value }
     }
 
 
-
-    function exitNewDocument() {
-        mode.value = "startup"
-    }
+    //*******************************************************************************//
+    //
+    //                    OVERLAYS
+    //
+    //******************************************************************************* */
 
     let overlays = []
 
@@ -278,40 +287,19 @@ doc = { filename: filename.value }
         mode.value = "addOrSelectOverlay"
     }
 
-    function fileIsLoaded() {
-        if (filename.value.length && mode.value !== "editOverlay") {
-            return true
-        }
-        else {
-            return false
-        }
 
-    }
 
     function filteredOverlays() {
         if (mode.value === "addOrSelectOverlay") return overlays;
         return overlays.filter(obj => obj.ID !== "o" + overlayIndex.value)
     }
 
-    function loadDocuments() {
-        const documents = JSON.parse(localStorage.getItem('geode-documents') || '[]');
-        return documents;
-    }
-    function saveDocuments() {
-        localStorage.setItem('geode-documents', JSON.stringify(documents));
-    }
-    function selectDocument(docId) {
-        selectedDocument = documents.find(doc => doc.id === docId);
-    }
     function selectOverlay(overlayId) {
         if (selectedDocument) {
             selectedOverlay = selectedDocument.overlays.find(overlay => overlay.id === overlayId);
         }
     }
-    function deleteDocument(docId) {
-        documents = documents.filter(doc => doc.id !== docId);
-        saveDocuments();
-    }
+
     function deleteOverlay(overlayId) {
         if (selectedDocument) {
             selectedDocument.overlays = selectedDocument.overlays.filter(overlay => overlay.id !== overlayId);
@@ -320,35 +308,23 @@ doc = { filename: filename.value }
     }
 
 
-
-    function convertPixelsToHeightPercentage(str) {
-
-        let val = str.substr(0, str.length - 1);
-
-        return (convertToHeightPercentage(val))
-    }
-
-    function convertToHeightPercentage(val) {
-        var windowHeight = window.innerHeight;
-
-        //if (props.savedBaseHeight) windowHeight = savedBaseHeight;
-            return parseInt(val) / windowHeight * 100
-    }
-
     function getFontClassName(ele) {
 
         var classList = $(ele).attr("class")
+
         return classList.split(' ')[0]; 
     }
 
     function getRotateValue(ele)  {
+
         let val = $(ele).css("rotate")
 
         if (val === 'none') return val
 
         return val.substr(0, val.length - 3)
     }
-    
+
+
 
     function saveOverlay() {
         let obj = overlays[overlayIndex.value]

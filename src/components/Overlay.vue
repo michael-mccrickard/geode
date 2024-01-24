@@ -1,6 +1,6 @@
 <script setup>
     import { ref, computed, onMounted, onUnmounted, onUpdated, reactive, toRefs } from 'vue'
-    import $ from 'jquery'
+    import { convertPixelsToHeightPercentage, convertToHeightPercentage, convertHeightPercentageToPixels } from './utils.js'
     import { useMouse } from '../mouse.js'
 
     const props = defineProps({
@@ -13,6 +13,11 @@
         }
     })
 
+    //*******************************************************************************//
+    //
+    //                    MOUSE HANDLING
+    //
+    //********************************************************************************/
 
     //clicking the mouse on the image moves the headline
     const { x, y } = useMouse()
@@ -53,6 +58,17 @@
     onUpdated(() => {
 
     })
+
+    //*******************************************************************************//
+    //
+    //                    MOVE TEXT (ALSO SETS UP ARROW KEY MOVES)
+    //
+    //********************************************************************************/
+
+    function changeContainerPosition() {
+        setOperation('changeContainerPosition')
+        setMode("editContainer")
+    }
 
     function handleArrowKey(event) {
         const key = event.key
@@ -108,20 +124,6 @@
         }
     }
 
-    //*******************************************************************************//
-    //
-    //                    MOVE TEXT (ALSO SETS UP ARROW KEY MOVES)
-    //
-    //********************************************************************************/
-
-    //const posX = ref(0)
-    //const posY = ref(0)
-
-//make this toggle the button and the state
-    function changeContainerPosition() {
-        setOperation('changeContainerPosition')
-        setMode("editContainer")
-    }
 
     //*******************************************************************************//
     //
@@ -272,7 +274,7 @@
 
     //*******************************************************************************//
     //
-    //                     TEXT and CONTAINER
+    //                     TEXT and CONTAINER SIZING
     //
     //******************************************************************************* */
 
@@ -320,8 +322,6 @@
     }
 
 
-
-
     //*******************************************************************************//
     //
     //                    STYLING
@@ -331,13 +331,6 @@
     let initialFontDraw = true
     var lastX, lastY
 
-/*     posX.value = props.savedX
-            posY.value = props.savedY
-            textColor = props.savedColor
-            fontSize.value = props.savedFontSize
-            rotate.value = props.savedRotate
-            initialDraw = false */
-        
 
     function getStyleObject() {
         var windowHeight = window.innerHeight;
@@ -382,15 +375,6 @@
         }
     }
 
-    function convertHeightPercentageToPixels(val) {
-        var windowHeight = window.innerHeight;
-         return (parseFloat(val) / 100) * windowHeight
-    }
-
-    function convertToHeightPercentage(val) {
-        var windowHeight = window.innerHeight;
-         return parseInt(val) / windowHeight * 100
-    }
 
     function getEditButtonClass(_str) {
         var _class = "";
