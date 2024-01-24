@@ -404,7 +404,7 @@ doc = { filename: filename.value }
             />
     </div>
 
-    <div id="stubOverlaySpace">
+    <div id="stubOverlaySpace" class = "stubContainer">
             <Stub 
                 v-for="(obj, index) in filteredOverlays()"
                 :key="index"

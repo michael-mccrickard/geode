@@ -421,7 +421,7 @@
         <div class="container">
             <img :src= "props.filename" @click="clickEventOnImg"/>
 
-            <div :id="getDivID()" :class="getClassList()" :style="getStyleObject()" data-colorName="getColorName()">
+            <div :id="getDivID()" :class="getClassList()" :style="getStyleObject()" >
                 <span>{{props.obj.text}} </span>
             </div>
         </div>

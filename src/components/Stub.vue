@@ -22,7 +22,7 @@
             fontSize: props.obj.fontSize + "vh",
             color: props.obj.color,
             rotate: props.obj.rotate + "deg",
-            width:  convertHeightPercentageToPixels(props.obj.width) + "px"
+            width:  props.obj.width + "vh"
         }
     }
 
