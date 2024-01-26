@@ -62,8 +62,11 @@
     }
 
     function loadDocuments() {
-        const arrDocuments = JSON.parse(localStorage.getItem('geode-documents') || '[]');
-        return arrDocuments;
+        var arrDocuments = JSON.parse(localStorage.getItem('geode-documents') || '[]');
+        docName.value = "Loading ..."
+        mode.value = "selectLoadedDocument"
+
+    console.log("am i here")
     }
     function saveDocuments() {
         localStorage.setItem('geode-documents', JSON.stringify(arrDocuments));
@@ -374,6 +377,10 @@ console.log("in saveDocument, docIndex is " + docIndex.value)
         return arrOverlays[overlayIndex.value].text
     }
 
+    function getArrDocuments() {
+        return arrDocuments
+    }
+
 
 
     //*******************************************************************************//
@@ -413,7 +420,11 @@ console.log("in saveDocument, docIndex is " + docIndex.value)
         <div v-if="isMode('startup')">
             <button @click="loadNationButtons()" class="controlButton unselected">NEW</button> 
             <button @click="loadDocuments()" class="controlButton unselected">LOAD</button>  
-            <div v-for="(obj, index) in arrDocuments">
+        </div>
+
+        <div v-if="isMode('selectLoadedDocument')">
+            <span>{{ docName.value }}</span>
+            <div v-for="(obj, index) in getArrDocuments()">
                 <button @click="selectDocument(index)"> {{ obj.name }}</button>
             </div> 
         </div>
@@ -425,7 +436,7 @@ console.log("in saveDocument, docIndex is " + docIndex.value)
         </div>
 
         <div v-if="isMode('addOrSelectOverlay')">
-            <span id="docName">{{ }}</span>
+            <span>{{ docName }}</span>
             <button  class="controlButton" @click="createNewOverlay()">+ OVERLAY</button>    
             <button  class="controlButton" @click="exitNewDocument()">EXIT</button>  
             <div v-for="(obj, index) in filteredOverlays()">
